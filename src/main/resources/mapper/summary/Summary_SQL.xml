@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="summary">
+
+	<select id="menu_id" resultType="hashmap" parameterType="hashmap">
+		<![CDATA[
+ 			SELECT com_cod
+ 				 , pet_cod
+ 				 , com_cod_nam
+ 				 , com_cod_cmt
+ 			  FROM COMCODTB
+ 			 WHERE com_cod = #{menu_cd}
+ 		]]>
+	</select>
+	
+	<update id="updateMenuCd" parameterType="hashmap">
+		UPDATE USRTB 
+		   SET lst_pag = #{lst_pag}
+		<if test="lst_bms_id != null and lst_bms_id != ''">
+			 , lst_bms_id = #{lst_bms_id}
+		</if>
+		<if test="lst_bts_id != null and lst_bts_id != ''">
+			 , lst_bts_id = #{lst_bts_id}
+		</if>
+		 WHERE usr_id = #{usr_id}
+	</update>
+
+	<select id="findStt" resultType="hashmap" parameterType="hashmap">
+		<include refid="common.pagingPre"/> 
+		<![CDATA[
+			SELECT @NO := @NO + 1 AS RNUM
+				 , A.*
+			  FROM
+	 			   (
+	 			    SELECT (SELECT COUNT(1) FROM STTTB WHERE knd = #{knd}) TOTAL_COUNT
+	 			    	 , knd
+				         , bms_id
+				         , bts_id
+				         , (SELECT bms_nam FROM BAKMNGSVRTB WHERE bms_id = A1.bms_id) mng_svr
+				         , (SELECT bts_nam FROM BAKTGTSVRTB WHERE bts_id = A1.bts_id) tgt_svr
+				         , (
+				            SELECT com_cod_nam
+				              FROM COMCODTB B1
+				             WHERE A1.suc_yon = B1.com_cod
+				           ) suc_yon
+				         , (
+				            SELECT com_cod_nam
+				              FROM COMCODTB B1
+				             WHERE A1.typ = B1.com_cod
+				           ) typ
+				         , (
+				            SELECT com_cod_nam
+				              FROM COMCODTB B1
+				             WHERE A1.lvl = B1.com_cod
+				           ) lvl
+				         , (
+				            SELECT com_cod_nam
+				              FROM COMCODTB B1
+				             WHERE A1.mtd = B1.com_cod
+				           ) mtd
+				         , pas_tme
+				         , exe_tme
+				         , kep_pod
+				         , (
+				            SELECT com_cod_nam
+				              FROM COMCODTB B1
+				             WHERE A1.exe_pod = B1.com_cod
+				           ) exe_pod
+				         , DATE_FORMAT(upd_dt, '%Y-%m-%d %H:%i:%s') upd_dt
+	 			      FROM STTTB A1
+	 			     WHERE knd = #{knd}
+ 			 	   ) A
+				 , (SELECT @NO := 0) B
+ 		]]>
+		<include refid="common.pagingPost"/>
+	</select>
+	
+	<select id="findScd" resultType="hashmap" parameterType="hashmap">
+		<include refid="common.pagingPre"/> 
+		<![CDATA[
+			SELECT @NO := @NO + 1 AS RNUM
+				 , A.*
+			  FROM
+	 			   (
+	 			    SELECT (SELECT COUNT(1) FROM BAKSCDTB) TOTAL_COUNT
+	 			    	 , bms_id
+	 			    	 , bts_id
+				         , (SELECT bms_nam FROM BAKMNGSVRTB WHERE bms_id = A1.bms_id) mng_svr
+				         , (SELECT bts_nam FROM BAKTGTSVRTB WHERE bts_id = A1.bts_id) tgt_svr
+				         , scd_nam
+				         , (
+				            SELECT com_cod_nam
+				              FROM COMCODTB B1
+				             WHERE A1.typ = B1.com_cod
+				           ) typ
+				         , (
+				            SELECT com_cod_nam
+				              FROM COMCODTB B1
+				             WHERE A1.scd_lvl = B1.com_cod
+				           ) lvl
+				         , (
+				            SELECT com_cod_nam
+				              FROM COMCODTB B1
+				             WHERE A1.mtd = B1.com_cod
+				           ) mtd
+				         , ( 
+								SELECT com_cod_nam
+				              FROM COMCODTB B1
+				             WHERE A1.pod_set = B1.com_cod
+				           ) pod_set
+				         , tme_set
+						 , kep_pod
+				         , DATE_FORMAT(upd_dt, '%Y-%m-%d %H:%i:%s') upd_dt
+	 			      FROM BAKSCDTB A1
+ 			 	   ) A
+				 , (SELECT @NO := 0) B
+ 		]]>
+		<include refid="common.pagingPost"/>
+	</select>
+	
+	<select id="findSttTC" resultType="hashmap" parameterType="hashmap">
+		<![CDATA[
+ 			SELECT COUNT(1) TOTAL_COUNT
+ 			  FROM STTTB
+ 			 WHERE knd = #{knd}
+ 			 LIMIT #{START}, #{END}
+ 		]]>
+	</select>
+	
+	<select id="findScdAll" resultType="hashmap" parameterType="hashmap">
+		<![CDATA[
+		    SELECT bms_id
+		    	 , bts_id
+		         , (SELECT bms_nam FROM BAKMNGSVRTB WHERE bms_id = A1.bms_id) mng_svr
+		         , (SELECT bts_nam FROM BAKTGTSVRTB WHERE bts_id = A1.bts_id) tgt_svr
+		         , scd_nam
+		         , (
+		            SELECT com_cod_nam
+		              FROM COMCODTB B1
+		             WHERE A1.typ = B1.com_cod
+		           ) typ
+		         , (
+		            SELECT com_cod_nam
+		              FROM COMCODTB B1
+		             WHERE A1.scd_lvl = B1.com_cod
+		           ) lvl
+		         , (
+		            SELECT com_cod_nam
+		              FROM COMCODTB B1
+		             WHERE A1.mtd = B1.com_cod
+		           ) mtd
+		         , ( 
+					SELECT com_cod_nam
+		              FROM COMCODTB B1
+		             WHERE A1.pod_set = B1.com_cod
+		           ) pod_set
+		         , tme_set
+				 , kep_pod
+		         , DATE_FORMAT(upd_dt, '%Y-%m-%d %H:%i:%s') upd_dt
+		      FROM BAKSCDTB A1
+ 		]]>
+	</select>
+	
+	<insert id="insertSmyStt" parameterType="hashmap">
+		INSERT INTO STTTB
+		     (
+		       knd
+		     , bms_id
+			 , bts_id
+		<if test="suc_yon != null and suc_yon != ''">
+			 , suc_yon	
+		</if>
+		<if test="typ != null and typ != ''">
+			 , typ
+		</if>
+		<if test="lvl != null and lvl != ''">
+			 , lvl
+		</if>
+		<if test="mtd != null and mtd != ''">
+		     , mtd
+		</if>
+		<if test="pas_tme != null and pas_tme != ''">
+			 , pas_tme
+		</if>
+		<if test="exe_tme != null and exe_tme != ''">
+			 , exe_tme
+		</if>
+		<if test="kep_pod != null and kep_pod != ''">
+			 , kep_pod
+		</if>
+		<if test="exe_pod != null and exe_pod != ''">
+			 , exe_pod
+		</if>
+			 , upd_dt
+		     )
+		VALUES
+		     (
+		       #{knd}
+		     , #{bms_id}
+			 , #{bts_id}
+		<if test="suc_yon != null and suc_yon != ''">
+			 , #{suc_yon}
+		</if>
+		<if test="typ != null and typ != ''">
+			 , #{typ}
+		</if>
+		<if test="lvl != null and lvl != ''">
+			 , #{lvl}
+		</if>
+		<if test="mtd != null and mtd != ''">
+		     , #{mtd}
+		</if>
+		<if test="pas_tme != null and pas_tme != ''">
+			 , #{pas_tme}
+		</if>
+		<if test="exe_tme != null and exe_tme != ''">
+			 , #{exe_tme}
+		</if>
+		<if test="kep_pod != null and kep_pod != ''">
+			 , #{kep_pod}
+		</if>
+		<if test="exe_pod != null and exe_pod != ''">
+			 , #{exe_pod}
+		</if>
+			 , now()
+		     )
+	</insert>
+	
+	<update id="updateStt" parameterType="hashmap">
+		INSERT INTO STTTB
+		     (
+		       knd
+		     , bms_id
+			 , bts_id
+		<if test="suc_yon != null and suc_yon != ''">
+			 , suc_yon	
+		</if>
+		<if test="typ != null and typ != ''">
+			 , typ
+		</if>
+		<if test="lvl != null and lvl != ''">
+			 , lvl
+		</if>
+		<if test="mtd != null and mtd != ''">
+		     , mtd
+		</if>
+		<if test="pas_tme != null and pas_tme != ''">
+			 , pas_tme
+		</if>
+		<if test="exe_tme != null and exe_tme != ''">
+			 , exe_tme
+		</if>
+		<if test="kep_pod != null and kep_pod != ''">
+			 , kep_pod
+		</if>
+		<if test="exe_pod != null and exe_pod != ''">
+			 , exe_pod
+		</if>
+			 , upd_dt
+		     )
+		VALUES
+		     (
+		       #{knd}
+		     , #{bms_id}
+			 , #{bts_id}
+		<if test="suc_yon != null and suc_yon != ''">
+			 , #{suc_yon}
+		</if>
+		<if test="typ != null and typ != ''">
+			 , #{typ}
+		</if>
+		<if test="lvl != null and lvl != ''">
+			 , #{lvl}
+		</if>
+		<if test="mtd != null and mtd != ''">
+		     , #{mtd}
+		</if>
+		<if test="pas_tme != null and pas_tme != ''">
+			 , #{pas_tme}
+		</if>
+		<if test="exe_tme != null and exe_tme != ''">
+			 , #{exe_tme}
+		</if>
+		<if test="kep_pod != null and kep_pod != ''">
+			 , #{kep_pod}
+		</if>
+		<if test="exe_pod != null and exe_pod != ''">
+			 , #{exe_pod}
+		</if>
+			 , now()
+		     )
+            ON DUPLICATE KEY
+		UPDATE upd_dt = now()
+			 , suc_yon = #{suc_yon}
+			 , typ = #{typ}
+			 , lvl = #{lvl}
+		     , mtd = #{mtd}
+			 , pas_tme = #{pas_tme}
+			 , exe_tme = #{exe_tme}
+			 , kep_pod = #{kep_pod}
+			 , exe_pod = #{exe_pod}
+	</update>
+	
+	<delete id="deleteStt" parameterType="hashmap">
+		DELETE FROM STTTB
+		 WHERE knd IN ('G01','G02')
+		<if test="bms_id != null and bms_id != ''">
+		   AND bms_id = #{bms_id}
+		</if>
+		<if test="bts_id != null and bts_id != ''">
+		   AND bts_id = #{bts_id}
+		</if>
+	</delete>
+
+	<select id="findUsrLstInfo" resultType="hashmap" parameterType="hashmap">
+		<![CDATA[
+			SELECT usr_id
+				 , usr_pwd
+				 , usr_ema
+				 , usr_ath
+				 , (
+		            SELECT com_cod_nam
+		              FROM COMCODTB B1
+		             WHERE usr_ath = B1.com_cod
+		           ) usr_ath_cdname
+				 , lst_pag
+				 , lst_bms_id
+				 , lst_bts_id
+				 , reg_dt
+				 , upd_dt
+			  FROM USRTB
+			 WHERE usr_id = #{id}
+ 		]]>
+	</select>
+	
+</mapper>

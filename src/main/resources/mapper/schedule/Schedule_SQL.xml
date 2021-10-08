@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="schedule">
+
+	<select id="cronSelect" resultType="hashmap" parameterType="hashmap">
+		<![CDATA[
+			SELECT wrk_dt
+				 , bms_id
+				 , bts_id
+				 , cron_nam
+				 , lvl
+				 , mtd
+				 , typ
+				 , kep_pod
+				 , suc_yon
+				 , pas_tme
+			  FROM SCDIPETB
+		]]>
+	</select>
+	
+	<delete id="cronDelete" parameterType="hashmap">
+		DELETE FROM SCDIPETB
+		 WHERE wrk_dt = #{wrk_dt}
+	</delete>
+	
+	<select id="listDelSchTarget" resultType="hashmap" parameterType="hashmap">
+		SELECT a.run_id
+			 , a.run_pid
+			 , a.bms_id
+			 , (
+			 	SELECT b.bms_nam
+			 	  FROM BAKMNGSVRTB b
+			 	 WHERE a.bms_id = b.bms_id
+			   ) bms_nam
+			 , a.bts_id
+			 , (
+			 	SELECT c.bts_nam
+			 	  FROM BAKTGTSVRTB c
+			 	 WHERE a.bts_id = c.bts_id
+			   ) bts_nam
+			 , a.lvl
+			 , a.typ
+			 , a.wrk_dt
+			 , a.kep_pod
+		  FROM BAKRUNTB a
+		 ORDER BY a.wrk_dt
+	</select>
+	
+	<select id="listSchDtTarget" resultType="hashmap" parameterType="hashmap">
+		SELECT a.run_id
+			 , a.run_pid
+			 , a.bms_id
+			 , (
+			 	SELECT b.bms_nam
+			 	  FROM BAKMNGSVRTB b
+			 	 WHERE a.bms_id = b.bms_id
+			   ) bms_nam
+			 , a.bts_id
+			 , (
+			 	SELECT c.bts_nam
+			 	  FROM BAKTGTSVRTB c
+			 	 WHERE a.bts_id = c.bts_id
+			   ) bts_nam
+			 , a.wrk_dt
+			 , a.kep_pod
+		  FROM BAKRUNTB a
+		 WHERE a.bms_id = #{bms_id}
+		   AND a.bts_id = #{bts_id}
+		   AND a.wrk_dt = #{wrk_dt}
+	</select>
+	
+	<select id="listSchPidTarget" resultType="hashmap" parameterType="hashmap">
+		SELECT a.run_id
+			 , a.run_pid
+			 , a.bms_id
+			 , (
+			 	SELECT b.bms_nam
+			 	  FROM BAKMNGSVRTB b
+			 	 WHERE a.bms_id = b.bms_id
+			   ) bms_nam
+			 , a.bts_id
+			 , (
+			 	SELECT c.bts_nam
+			 	  FROM BAKTGTSVRTB c
+			 	 WHERE a.bts_id = c.bts_id
+			   ) bts_nam
+			 , a.wrk_dt
+			 , a.kep_pod
+		  FROM BAKRUNTB a
+		 WHERE a.run_lvl = 2
+		   AND a.bms_id = #{bms_id}
+		   AND a.bts_id = #{bts_id}
+		   AND a.run_pid = #{run_pid}
+	</select>
+	
+	<delete id="deleteIncreRun" parameterType="hashmap">
+		DELETE FROM BAKRUNTB
+		 WHERE run_pid = #{run_pid}
+		   AND bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+	</delete>
+	
+	<delete id="deleteIDRun" parameterType="hashmap">
+		DELETE FROM BAKRUNTB
+		 WHERE run_id = #{run_id}
+		   AND bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+	</delete>
+	
+	
+</mapper>

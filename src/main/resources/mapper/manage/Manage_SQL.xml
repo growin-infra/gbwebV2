@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="manage">
+
+	<select id="findUsr" resultType="hashmap" parameterType="hashmap">
+		<include refid="common.pagingPre"/> 
+		<![CDATA[
+			SELECT @NO := @NO + 1 AS RNUM
+				 , A.*
+			  FROM
+	 			   (
+					SELECT (SELECT COUNT(1) FROM USRTB) TOTAL_COUNT
+						 , usr_id
+						 , usr_pwd
+						 , usr_ema
+						 , usr_ath
+						 , (
+				            SELECT com_cod_nam
+				              FROM COMCODTB B1
+				             WHERE usr_ath = B1.com_cod
+				           ) usr_ath_cdname
+						 , lst_pag
+						 , del_yon
+						 , DATE_FORMAT(reg_dt, '%Y-%m-%d %H:%i:%s') reg_dt
+						 , DATE_FORMAT(upd_dt, '%Y-%m-%d %H:%i:%s') upd_dt
+					  FROM USRTB
+					  ORDER BY reg_dt DESC , upd_dt DESC
+ 			 	   ) A
+				 , (SELECT @NO := 0) B
+ 		]]>
+		<include refid="common.pagingPost"/>
+	</select>
+	
+	<select id="findUsrMap" resultType="hashmap" parameterType="hashmap">
+		<![CDATA[
+			SELECT usr_id
+				 , usr_pwd
+				 , usr_ema
+				 , usr_ath
+				 , (
+		            SELECT com_cod_nam
+		              FROM COMCODTB B1
+		             WHERE usr_ath = B1.com_cod
+		           ) usr_ath_cdname
+				 , lst_pag
+				 , del_yon
+				 , reg_dt
+				 , upd_dt
+			  FROM USRTB
+			 WHERE usr_id = #{id}
+		]]>
+	</select>
+	
+	<insert id="insertUsr" parameterType="hashmap">
+		INSERT INTO USRTB
+		     (
+		       usr_id
+			 , usr_pwd
+			 , usr_ath
+		<if test="usr_ema != null and usr_ema != ''">
+			 , usr_ema
+		</if>
+			 , reg_dt
+		     )
+		VALUES
+		     (
+		       #{usr_id}
+			 , #{usr_pwd_crypt}
+			 , #{usr_ath}
+		<if test="usr_ema != null and usr_ema != ''">
+			 , #{usr_ema}
+		</if>
+			 , now()
+		     )
+	</insert>
+	
+	<update id="updateUsr" parameterType="hashmap">
+        UPDATE USRTB
+           SET upd_dt = now()
+      	     , usr_pwd = #{usr_pwd_crypt}
+      	     , usr_ema = #{usr_ema}
+			 , usr_ath = #{usr_ath}
+		 WHERE usr_id = #{usr_id}
+	</update>
+	
+	<delete id="deleteUsr" parameterType="hashmap">
+		DELETE FROM USRTB
+		 WHERE usr_id = #{usr_id}
+	</delete>
+
+	<select id="findDftBakSet" resultType="hashmap" parameterType="hashmap">
+		SELECT usr_id
+			 , msq_clt_utl_pth
+			 , mng_xtr_bny_log_pth
+			 , sou_db
+			 , cnn_typ
+			 , pot_num
+			 , hst_ip
+			 , ssh_usr
+			 , tmp_dir
+			 , bak_typ
+			 , bak_typ_itm
+			 , bak_typ_tbe
+			 , reg_dt
+			 , upd_dt
+		  FROM DFTBAKSETTB
+		 WHERE usr_id = #{usr_id}
+	</select>
+
+	<select id="findDftBakMtd" resultType="hashmap" parameterType="hashmap">
+		SELECT usr_id
+			 , bny_pth
+			 , use_mmy
+			 , pel
+			 , trt
+			 , cpr
+			 , xtr_opt
+			 , rmt_msq_bny_pth
+			 , xtr_bny_log_pth
+			 , dft_fil
+			 , lck_opt
+			 , cha_set
+			 , fsh_log
+			 , msq_opt
+			 , msq_bny_log_pth
+			 , avt_nam
+			 , reg_dt
+			 , upd_dt
+		  FROM DFTBAKMTDTB
+		 WHERE usr_id = #{usr_id}
+	</select>
+	
+	<update id="insertDftBakSet" parameterType="hashmap">
+		INSERT INTO DFTBAKSETTB
+		     (
+		       usr_id
+		<if test="msq_clt_utl_pth != null and msq_clt_utl_pth != ''">
+			 , msq_clt_utl_pth
+		</if>
+		<if test="mng_xtr_bny_log_pth != null and mng_xtr_bny_log_pth != ''">
+			 , mng_xtr_bny_log_pth
+		</if>
+		<if test="sou_db != null and sou_db != ''">
+			 , sou_db
+		</if>
+		<if test="cnn_typ != null and cnn_typ != ''">
+			 , cnn_typ
+		</if>
+		<if test="pot_num != null and pot_num != ''">
+			 , pot_num
+		</if>
+		<if test="hst_ip != null and hst_ip != ''">
+			 , hst_ip
+		</if>
+		<if test="ssh_usr != null and ssh_usr != ''">
+			 , ssh_usr
+		</if>
+		<if test="tmp_dir != null and tmp_dir != ''">
+			 , tmp_dir
+		</if>
+		<if test="bak_typ != null and bak_typ != ''">
+			 , bak_typ
+		</if>
+		<if test="bak_typ_itm != null and bak_typ_itm != ''">
+			 , bak_typ_itm
+		</if>
+		<if test="bak_typ_tbe != null and bak_typ_tbe != ''">
+			 , bak_typ_tbe
+		</if>
+			 , reg_dt
+		     )
+		VALUES
+		     (
+		       #{usr_id}
+		<if test="msq_clt_utl_pth != null and msq_clt_utl_pth != ''">
+			 , #{msq_clt_utl_pth}
+		</if>
+		<if test="mng_xtr_bny_log_pth != null and mng_xtr_bny_log_pth != ''">
+			 , #{mng_xtr_bny_log_pth}
+		</if>
+		<if test="sou_db != null and sou_db != ''">
+			 , #{sou_db}
+		</if>
+		<if test="cnn_typ != null and cnn_typ != ''">
+			 , #{cnn_typ}
+		</if>
+		<if test="pot_num != null and pot_num != ''">
+			 , #{pot_num}
+		</if>
+		<if test="hst_ip != null and hst_ip != ''">
+			 , #{hst_ip}
+		</if>
+		<if test="ssh_usr != null and ssh_usr != ''">
+			 , #{ssh_usr}
+		</if>
+		<if test="tmp_dir != null and tmp_dir != ''">
+			 , #{tmp_dir}
+		</if>
+		<if test="bak_typ != null and bak_typ != ''">
+			 , #{bak_typ}
+		</if>
+		<if test="bak_typ_itm != null and bak_typ_itm != ''">
+			 , bak_typ_itm
+		</if>
+		<if test="bak_typ_tbe != null and bak_typ_tbe != ''">
+			 , bak_typ_tbe
+		</if>
+			 , now()
+		     )
+            ON DUPLICATE KEY
+        UPDATE upd_dt = now()
+			 , msq_clt_utl_pth = #{msq_clt_utl_pth}
+			 , mng_xtr_bny_log_pth = #{mng_xtr_bny_log_pth}
+			 , sou_db = #{sou_db}
+			 , cnn_typ = #{cnn_typ}
+			 , pot_num = #{pot_num}
+			 , hst_ip = #{hst_ip}
+			 , ssh_usr = #{ssh_usr}
+			 , tmp_dir = #{tmp_dir}
+			 , bak_typ = #{bak_typ}
+			 , bak_typ_itm = #{bak_typ_itm}
+			 , bak_typ_tbe = #{bak_typ_tbe}
+	</update>
+	
+	<delete id="deleteDftBakSet" parameterType="hashmap">
+		DELETE FROM DFTBAKSETTB
+		 WHERE usr_id = #{usr_id}
+	</delete>
+	
+	<update id="insertDftBakMtd" parameterType="hashmap">
+		INSERT INTO DFTBAKMTDTB
+		     (
+		       usr_id
+		<if test="bny_pth != null and bny_pth != ''">
+			 , bny_pth
+		</if>
+		<if test="use_mmy != null and use_mmy != ''">
+			 , use_mmy
+		</if>
+		<if test="pel != null and pel != ''">
+			 , pel
+		</if>
+		<if test="trt != null and trt != ''">
+			 , trt
+		</if>
+		<if test="cpr != null and cpr != ''">
+			 , cpr
+		</if>
+		<if test="xtr_opt != null and xtr_opt != ''">
+			 , xtr_opt
+		</if>
+		<if test="rmt_msq_bny_pth != null and rmt_msq_bny_pth != ''">
+			 , rmt_msq_bny_pth
+		</if>
+		<if test="xtr_bny_log_pth != null and xtr_bny_log_pth != ''">
+			 , xtr_bny_log_pth
+		</if>
+		<if test="dft_fil != null and dft_fil != ''">
+			 , dft_fil
+		</if>
+		<if test="lck_opt != null and lck_opt != ''">
+			 , lck_opt
+		</if>
+		<if test="cha_set != null and cha_set != ''">
+			 , cha_set
+		</if>
+		<if test="fsh_log != null and fsh_log != ''">
+			 , fsh_log
+		</if>
+		<if test="msq_opt != null and msq_opt != ''">
+			 , msq_opt
+		</if>
+		<if test="msq_bny_log_pth != null and msq_bny_log_pth != ''">
+			 , msq_bny_log_pth
+		</if>
+		<if test="avt_nam != null and avt_nam != ''">
+			 , avt_nam
+		</if>
+			 , reg_dt
+		     )
+		VALUES
+		     (
+		       #{usr_id}
+		<if test="bny_pth != null and bny_pth != ''">
+			 , #{bny_pth}
+		</if>
+		<if test="use_mmy != null and use_mmy != ''">
+			 , #{use_mmy}
+		</if>
+		<if test="pel != null and pel != ''">
+			 , #{pel}
+		</if>
+		<if test="trt != null and trt != ''">
+			 , #{trt}
+		</if>
+		<if test="cpr != null and cpr != ''">
+			 , #{cpr}
+		</if>
+		<if test="xtr_opt != null and xtr_opt != ''">
+			 , #{xtr_opt}
+		</if>
+		<if test="rmt_msq_bny_pth != null and rmt_msq_bny_pth != ''">
+			 , #{rmt_msq_bny_pth}
+		</if>
+		<if test="xtr_bny_log_pth != null and xtr_bny_log_pth != ''">
+			 , #{xtr_bny_log_pth}
+		</if>
+		<if test="dft_fil != null and dft_fil != ''">
+			 , #{dft_fil}
+		</if>
+		<if test="lck_opt != null and lck_opt != ''">
+			 , #{lck_opt}
+		</if>
+		<if test="cha_set != null and cha_set != ''">
+			 , #{cha_set}
+		</if>
+		<if test="fsh_log != null and fsh_log != ''">
+			 , #{fsh_log}
+		</if>
+		<if test="msq_opt != null and msq_opt != ''">
+			 , #{msq_opt}
+		</if>
+		<if test="msq_bny_log_pth != null and msq_bny_log_pth != ''">
+			 , #{msq_bny_log_pth}
+		</if>
+		<if test="avt_nam != null and avt_nam != ''">
+			 , #{avt_nam}
+		</if>
+			 , now()
+		     )
+            ON DUPLICATE KEY
+        UPDATE upd_dt = now()
+			 , bny_pth = #{bny_pth}
+			 , use_mmy = #{use_mmy}
+			 , pel = #{pel}
+			 , trt = #{trt}
+			 , cpr = #{cpr}
+			 , xtr_opt = #{xtr_opt}
+			 , rmt_msq_bny_pth = #{rmt_msq_bny_pth}
+			 , xtr_bny_log_pth = #{xtr_bny_log_pth}
+			 , dft_fil = #{dft_fil}
+			 , lck_opt = #{lck_opt}
+			 , cha_set = #{cha_set}
+			 , fsh_log = #{fsh_log}
+			 , msq_opt = #{msq_opt}
+			 , msq_bny_log_pth = #{msq_bny_log_pth}
+			 , avt_nam = #{avt_nam}
+	</update>
+	
+	<delete id="deleteDftBakMtd" parameterType="hashmap">
+		DELETE FROM DFTBAKMTDTB
+		 WHERE usr_id = #{usr_id}
+	</delete>
+
+	<select id="findSvr" resultType="hashmap" parameterType="hashmap">
+		<include refid="common.pagingPre"/> 
+		<![CDATA[
+			SELECT @NO := @NO + 1 AS RNUM
+				 , A.*
+			  FROM
+	 			   (
+					SELECT (SELECT COUNT(1) FROM MNGSVRTB WHERE use_yon = 'Y') TOTAL_COUNT
+						 , ms_id
+						 , ms_nam
+						 , ms_ip
+						 , ms_port
+						 , ms_usr
+						 , ms_pwd
+						 , ms_ssh_usr
+						 , ms_sve_dir
+						 , ms_bny_pth
+						 , DATE_FORMAT(reg_dt, '%Y-%m-%d %H:%i:%s') reg_dt
+						 , DATE_FORMAT(upd_dt, '%Y-%m-%d %H:%i:%s') upd_dt
+					  FROM MNGSVRTB
+					 WHERE use_yon = 'Y'
+					  ORDER BY reg_dt DESC , upd_dt DESC
+ 			 	   ) A
+				 , (SELECT @NO := 0) B
+ 		]]>
+		<include refid="common.pagingPost"/>
+	</select>
+	
+	<insert id="insertSvr" parameterType="hashmap">
+		INSERT INTO MNGSVRTB
+		     (
+			   ms_id
+			 , ms_nam
+			 , ms_ip
+			 , ms_port
+			 , ms_usr
+			 , ms_pwd
+		<if test="ms_ssh_usr != null and ms_ssh_usr != ''">
+			 , ms_ssh_usr
+		</if>
+		<if test="ms_sve_dir != null and ms_sve_dir != ''">
+			 , ms_sve_dir
+		</if>
+		<if test="ms_bny_pth != null and ms_bny_pth != ''">
+			 , ms_bny_pth
+		</if>
+			 , reg_dt
+		     )
+		VALUES
+		     (
+		       (SELECT IFNULL(MAX(ms_id)+1,1) FROM MNGSVRTB A)
+			 , #{ms_nam}
+			 , #{ms_ip}
+			 , #{ms_port}
+			 , #{ms_usr}
+			 , #{ms_pwd}
+		<if test="ms_ssh_usr != null and ms_ssh_usr != ''">
+			 , #{ms_ssh_usr}
+		</if>
+		<if test="ms_sve_dir != null and ms_sve_dir != ''">
+			 , #{ms_sve_dir}
+		</if>
+		<if test="ms_bny_pth != null and ms_bny_pth != ''">
+			 , #{ms_bny_pth}
+		</if>
+			 , now()
+		     )
+	</insert>
+	
+	<update id="updateSvr" parameterType="hashmap">
+        UPDATE MNGSVRTB
+           SET upd_dt = now()
+             , ms_nam = #{ms_nam}
+      	     , ms_ip = #{ms_ip}
+      	     , ms_port = #{ms_port}
+			 , ms_usr = #{ms_usr}
+			 , ms_pwd = #{ms_pwd}
+			 , ms_ssh_usr = #{ms_ssh_usr}
+			 , ms_sve_dir = #{ms_sve_dir}
+			 , ms_bny_pth = #{ms_bny_pth}
+		 WHERE ms_id = #{ms_id}
+	</update>
+	
+	<update id="deleteSvr" parameterType="hashmap">
+		UPDATE MNGSVRTB
+           SET upd_dt = now()
+             , use_yon = 'N'
+		 WHERE ms_nam = #{ms_nam}
+		   AND ms_id = #{ms_id}
+	</update>
+
+	<select id="findSvrMap" resultType="hashmap" parameterType="hashmap">
+		SELECT ms_id
+			 , ms_nam
+			 , ms_ip
+			 , ms_port
+			 , ms_usr
+			 , ms_pwd
+			 , ms_ssh_usr
+			 , ms_sve_dir
+			 , ms_bny_pth
+			 , DATE_FORMAT(reg_dt, '%Y-%m-%d %H:%i:%s') reg_dt
+			 , DATE_FORMAT(upd_dt, '%Y-%m-%d %H:%i:%s') upd_dt
+		  FROM MNGSVRTB
+		 WHERE use_yon = 'Y'
+		<if test="ms_id != null and ms_id != ''">
+		   AND ms_id = #{ms_id}
+		</if>
+		<if test="ms_nam != null and ms_nam != ''">
+		   AND ms_nam = #{ms_nam}
+		</if>
+	</select>
+
+	<select id="listSvrAll" resultType="hashmap">
+		SELECT ms_id
+			 , ms_nam
+			 , ms_ip
+			 , ms_port
+			 , ms_usr
+			 , ms_pwd
+			 , ms_ssh_usr
+			 , ms_sve_dir
+			 , ms_bny_pth
+			 , DATE_FORMAT(reg_dt, '%Y-%m-%d %H:%i:%s') reg_dt
+			 , DATE_FORMAT(upd_dt, '%Y-%m-%d %H:%i:%s') upd_dt
+		  FROM MNGSVRTB
+		 WHERE use_yon = 'Y'
+	</select>
+	
+</mapper>

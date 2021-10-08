@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="login">
+
+	<select id="login" resultType="hashmap" parameterType="hashmap">
+		<![CDATA[
+			SELECT usr_id
+				 , usr_pwd
+				 , usr_ema
+				 , usr_ath
+				 , (
+		            SELECT com_cod_nam
+		              FROM COMCODTB B1
+		             WHERE usr_ath = B1.com_cod
+		           ) usr_ath_cdname
+				 , lst_pag
+				 , reg_dt
+				 , upd_dt
+			  FROM USRTB
+			 WHERE usr_id = #{id}
+			   AND usr_pwd = #{usr_pwd}
+		]]>
+	</select>
+</mapper>

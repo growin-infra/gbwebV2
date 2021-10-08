@@ -1,0 +1,1790 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="setup">
+
+	<select id="findTree" resultType="hashmap" parameterType="hashmap">
+		SELECT bmt_id
+			 , bmt_pid
+			 , bmt_nam
+			 , bmt_lvl
+			 , (
+			 	CASE
+			 		 WHEN bmt_lvl = 1
+			 		 THEN (
+			 		 	   SELECT CONCAT(bms_ip,':',bms_pot)
+			 		 	     FROM BAKMNGSVRTB b
+			 		 	    WHERE bmt_id = b.bms_id
+			 		 	  ) 
+			         WHEN bmt_lvl = 2
+			         THEN (
+			         	   SELECT CONCAT(bts_ip,':',bts_pot)
+			         	     FROM BAKTGTSVRTB b
+			         	    WHERE bmt_id = b.bts_id
+			         	  )
+			          END
+			   ) ip
+		  FROM BAKMNGTRETB A
+		 WHERE iab = 'N'
+		<if test="bmt_lvl != null and bmt_lvl != ''">
+		   AND bmt_lvl = #{bmt_lvl}
+		</if>
+		<if test="bmt_id != null and bmt_id != ''">
+		   AND bmt_id = #{bmt_id}
+		</if>
+		<if test="bmt_pid != null and bmt_pid != ''">
+		   AND bmt_pid = #{bmt_pid}
+		</if>
+		 UNION ALL
+		SELECT ms_id bmt_id
+			 , null bmt_pid
+			 , ms_nam bmt_name
+			 , 0 bmt_lvl
+			 , CONCAT(ms_ip,':',ms_port) ip
+		  FROM MNGSVRTB B
+		 WHERE B.use_yon = 'Y'
+	</select>
+	
+	<select id="findMngSvr" resultType="hashmap" parameterType="hashmap">
+		SELECT bms_id
+			 , bms_pid
+			 , bms_nam
+			 , bms_ip
+			 , bms_pot
+			 , bms_usr
+			 , bms_pwd
+			 , bms_dir_sve
+		  FROM BAKMNGSVRTB
+		 WHERE 1 = 1
+		<if test="bms_id != null and bms_id != ''">
+		   AND bms_id = #{bms_id}
+		</if>
+		<if test="bms_pid != null and bms_pid != ''">
+		   AND bms_pid = #{bms_pid}
+		</if>
+	</select>
+	
+	<select id="findMngSvrInfo" resultType="hashmap" parameterType="hashmap">
+		SELECT bms_id
+			 , bms_pid
+			 , bms_nam
+			 , bms_ip
+			 , bms_pot
+			 , bms_usr
+			 , bms_pwd
+			 , bms_dir_sve
+		  FROM BAKMNGSVRTB
+		 WHERE 
+		<if test="bms_pid != null and bms_pid != ''">
+		   bms_pid = #{bms_pid}
+		</if>
+	</select>
+
+	<select id="findTgtSvr" resultType="hashmap" parameterType="hashmap">
+		SELECT bts_id
+			 , bts_pid
+			 , bts_nam
+			 , bts_ip
+			 , bts_pot
+			 , bts_usr
+			 , bts_pwd
+			 , bts_mlt_ins
+		  FROM BAKTGTSVRTB
+		 WHERE 1 = 1
+		<if test="bts_id != null and bts_id != ''">
+		   AND bts_id = #{bts_id}
+		</if>
+		<if test="bts_pid != null and bts_pid != ''">
+		   AND bts_pid = #{bts_pid}
+		</if>
+	</select>
+
+	<select id="findMngSvrMaxId" resultType="hashmap" parameterType="hashmap">
+		SELECT IFNULL(MAX(bms_id)+1,${bmt_id}*100) maxid
+			 , ${bmt_id} maxpid
+		  FROM BAKMNGSVRTB
+		 WHERE bms_pid = ${bmt_id}
+	</select>
+
+	<select id="findTgtSvrMaxId" resultType="hashmap" parameterType="hashmap">
+		SELECT ${bms_id_mix}+IFNULL(MAX(RIGHT(bts_id,3))+1,${bmt_id}*100) maxid
+		  FROM BAKTGTSVRTB
+		 WHERE bts_pid = #{bts_pid}
+	</select>
+	
+	<insert id="insertTree" parameterType="hashmap">
+		INSERT INTO BAKMNGTRETB
+		     (
+		       bmt_id
+		<if test="bmt_pid != null and bmt_pid != ''">
+			 , bmt_pid
+		</if>
+			 , bmt_nam
+		<if test="bmt_lvl != null and bmt_lvl != ''">
+			 , bmt_lvl
+		</if>
+		<if test="iab != null and iab != ''">
+			 , iab
+		</if>
+			 , reg_dt
+		     )
+		VALUES
+		     (
+		       #{bmt_id}
+		<if test="bmt_pid != null and bmt_pid != ''">
+			 , #{bmt_pid}
+		</if>
+			 , #{bmt_nam}
+		<if test="bmt_lvl != null and bmt_lvl != ''">
+			 , #{bmt_lvl}
+		</if>
+		<if test="iab != null and iab != ''">
+			 , #{iab}
+		</if>
+			 , NOW()
+		     )
+	</insert>
+	
+	<insert id="insertMngSvr" parameterType="hashmap">
+		INSERT INTO BAKMNGSVRTB
+		     (
+		       bms_id
+		<if test="bms_pid != null and bms_pid != ''">
+			 , bms_pid
+		</if>
+			 , bms_nam
+		<if test="bms_ip != null and bms_ip != ''">
+			 , bms_ip
+		</if>
+		<if test="bms_pot != null and bms_pot != ''">
+			 , bms_pot
+		</if>
+		<if test="bms_usr != null and bms_usr != ''">
+			 , bms_usr
+		</if>
+		<if test="bms_pwd != null and bms_pwd != ''">
+			 , bms_pwd
+		</if>
+		<if test="bms_dir_sve != null and bms_dir_sve != ''">
+			 , bms_dir_sve
+		</if>
+			 , reg_dt
+		     )
+	    VALUES
+		     (
+		       #{bms_id}
+		<if test="bms_pid != null and bms_pid != ''">
+			 , #{bms_pid}
+		</if>
+			 , #{bms_nam}
+		<if test="bms_ip != null and bms_ip != ''">
+			 , #{bms_ip}
+		</if>
+		<if test="bms_pot != null and bms_pot != ''">
+			 , #{bms_pot}
+		</if>
+		<if test="bms_usr != null and bms_usr != ''">
+			 , #{bms_usr}
+		</if>
+		<if test="bms_pwd != null and bms_pwd != ''">
+			 , #{bms_pwd}
+		</if>
+		<if test="bms_dir_sve != null and bms_dir_sve != ''">
+			 , #{bms_dir_sve}
+		</if>
+			 , NOW()
+		     )
+	</insert>
+	
+	<insert id="insertTgtSvr" parameterType="hashmap">
+		INSERT INTO BAKTGTSVRTB
+		     (
+		       bts_id
+		<if test="bts_pid != null and bts_pid != ''">
+			 , bts_pid
+		</if>
+			 , bts_nam
+		<if test="bts_ip != null and bts_ip != ''">
+			 , bts_ip
+		</if>
+		<if test="bts_pot != null and bts_pot != ''">
+			 , bts_pot
+		</if>
+		<if test="bts_usr != null and bts_usr != ''">
+			 , bts_usr
+		</if>
+		<if test="bts_pwd != null and bts_pwd != ''">
+			 , bts_pwd
+		</if>
+		<if test="bts_mlt_ins != null and bts_mlt_ins != ''">
+			 , bts_mlt_ins
+		</if>
+			 , reg_dt
+		     )
+		VALUES
+		     (
+		       #{bts_id}
+		<if test="bts_pid != null and bts_pid != ''">
+			 , #{bts_pid}
+		</if>
+			 , #{bts_nam}
+		<if test="bts_ip != null and bts_ip != ''">
+			 , #{bts_ip}
+		</if>
+		<if test="bts_pot != null and bts_pot != ''">
+			 , #{bts_pot}
+		</if>
+		<if test="bts_usr != null and bts_usr != ''">
+			 , #{bts_usr}
+		</if>
+		<if test="bts_pwd != null and bts_pwd != ''">
+			 , #{bts_pwd}
+		</if>
+		<if test="bts_mlt_ins != null and bts_mlt_ins != ''">
+			 , #{bts_mlt_ins}
+		</if>
+			 , NOW()
+		     )
+	</insert>
+	
+	<update id="updateTree" parameterType="hashmap">
+        UPDATE BAKMNGTRETB
+           SET upd_dt = NOW()
+		<if test="bmt_nam != null and bmt_nam != ''">
+      	     , bmt_nam = #{bmt_nam}
+		</if>
+		<if test="iab != null and iab != ''">
+			 , iab = #{iab}
+		</if>
+		 WHERE bmt_id = #{bmt_id}
+	</update>
+	
+	<update id="updateMngSvr" parameterType="hashmap">
+        UPDATE BAKMNGSVRTB
+           SET upd_dt = NOW()
+		<if test="bms_nam != null and bms_nam != ''">
+      	     , bms_nam = #{bms_nam}
+		</if>
+		<if test="bms_ip != null and bms_ip != ''">
+             , bms_ip = #{bms_ip}
+		</if>
+		<if test="bms_pot != null and bms_pot != ''">
+             , bms_pot = #{bms_pot}
+		</if>
+		<if test="bms_usr != null and bms_usr != ''">
+             , bms_usr = #{bms_usr}
+		</if>
+		<if test="bms_pwd != null and bms_pwd != ''">
+             , bms_pwd = #{bms_pwd}
+		</if>
+		<if test="bms_dir_sve != null and bms_dir_sve != ''">
+             , bms_dir_sve = #{bms_dir_sve}
+		</if>
+		 WHERE bms_id = #{bms_id}
+	</update>
+	
+	<update id="updateTgtSvr" parameterType="hashmap">
+        UPDATE BAKTGTSVRTB
+           SET upd_dt = NOW()
+		<if test="bts_nam != null and bts_nam != ''">
+      	     , bts_nam = #{bts_nam}
+		</if>
+		<if test="bts_ip != null and bts_ip != ''">
+			 , bts_ip = #{bts_ip}
+		</if>
+		<if test="bts_pot != null and bts_pot != ''">
+			 , bts_pot = #{bts_pot}
+		</if>
+		<if test="bts_usr != null and bts_usr != ''">
+			 , bts_usr = #{bts_usr}
+		</if>
+		<if test="bts_pwd != null and bts_pwd != ''">
+			 , bts_pwd = #{bts_pwd}
+		</if>
+		<if test="bts_mlt_ins != null and bts_mlt_ins != ''">
+			 , bts_mlt_ins = #{bts_mlt_ins}
+		</if>
+		 WHERE bts_id = #{bts_id}
+	</update>
+	
+	<delete id="deleteTree" parameterType="hashmap">
+		DELETE FROM BAKMNGTRETB
+		 WHERE bmt_id = #{bmt_id}
+	</delete>
+	
+	<delete id="deleteMngSvr" parameterType="hashmap">
+		DELETE FROM BAKMNGSVRTB
+		 WHERE bms_id = #{bms_id}
+	</delete>
+	
+	<delete id="deleteTgtSvr" parameterType="hashmap">
+		DELETE FROM BAKTGTSVRTB
+		 WHERE bts_id = #{bts_id}
+	</delete>
+	
+	<delete id="deleteTreePid" parameterType="hashmap">
+		DELETE FROM BAKMNGTRETB
+		 WHERE bmt_pid = #{bmt_pid}
+	</delete>
+	
+	<delete id="deleteMngSvrPid" parameterType="hashmap">
+		DELETE FROM BAKMNGSVRTB
+		 WHERE bms_pid = #{bms_pid}
+	</delete>
+	
+	<delete id="deleteTgtSvrPid" parameterType="hashmap">
+		DELETE FROM BAKTGTSVRTB
+		 WHERE bts_pid = #{bts_pid}
+	</delete>
+
+	<select id="findIsLog" resultType="hashmap" parameterType="hashmap">
+		SELECT SUBSTRING(wrk_dt,1,8) is_wrk_dt
+		  FROM WRKLOGTB A1
+		 WHERE knd = #{knd}
+		   AND bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+	</select>
+
+	<select id="findLogMM" resultType="hashmap" parameterType="hashmap">
+		SELECT seq
+			 , knd
+			 , wrk_dt
+			 , bms_id
+			 , bts_id
+			 , (
+				SELECT com_cod_nam
+				FROM COMCODTB B1
+				WHERE A1.suc_yon = B1.com_cod
+			   ) suc_yon
+			 , (
+				SELECT com_cod_nam
+				FROM COMCODTB B1
+				WHERE A1.typ = B1.com_cod
+			   ) typ
+			 , (
+				SELECT com_cod_nam
+				FROM COMCODTB B1
+				WHERE A1.lvl = B1.com_cod
+			   ) lvl
+			 , (
+				SELECT com_cod_nam
+				FROM COMCODTB B1
+				WHERE A1.mtd = B1.com_cod
+			   ) mtd
+			 , pas_tme
+			 , exe_tme
+			 , kep_pod
+			 , (
+			    SELECT COUNT(suc_yon)
+			      FROM WRKLOGTB
+			     WHERE knd = #{knd}
+			       AND bms_id = #{bms_id}
+			       AND bts_id = #{bts_id} 
+			       AND wrk_dt LIKE CONCAT(#{day},'%')
+			       AND lvl = 'L01'
+			   ) AS total_full
+			 , (
+			    SELECT COUNT(suc_yon)
+			      FROM WRKLOGTB
+			     WHERE knd = #{knd}
+			       AND bms_id = #{bms_id}
+			       AND bts_id = #{bts_id}
+			       AND wrk_dt LIKE CONCAT(#{day},'%')
+			       AND suc_yon = 'S01' AND lvl = 'L01'
+			   ) AS succ_full
+			 , (
+			    SELECT COUNT(suc_yon)
+			      FROM WRKLOGTB
+			     WHERE knd = #{knd}
+			       AND bms_id = #{bms_id}
+			       AND bts_id = #{bts_id}
+			       AND wrk_dt LIKE CONCAT(#{day},'%')
+			       AND suc_yon = 'S02' AND lvl = 'L01'
+			   ) AS fail_full
+			 , (
+			    SELECT COUNT(suc_yon)
+				  FROM WRKLOGTB
+			     WHERE knd = #{knd}
+			       AND bms_id = #{bms_id}
+			       AND bts_id = #{bts_id}
+			       AND wrk_dt LIKE CONCAT(#{day},'%')
+			       AND lvl = 'L02'
+			   ) AS tot_incr
+			 , (
+			    SELECT COUNT(suc_yon)
+			      FROM WRKLOGTB
+			     WHERE knd = #{knd}
+			       AND bms_id = #{bms_id} 
+			       AND bts_id = #{bts_id}
+			       AND wrk_dt LIKE CONCAT(#{day},'%') 
+			       AND suc_yon = 'S01' AND lvl = 'L02'
+			   ) AS succ_incr
+			 , (
+			    SELECT COUNT(suc_yon)
+			      FROM WRKLOGTB
+			     WHERE knd = #{knd} 
+			       AND bms_id = #{bms_id} 
+			       AND bts_id = #{bts_id}
+			       AND wrk_dt LIKE CONCAT(#{day},'%') 
+			       AND suc_yon = 'S02' AND lvl = 'L02'
+			    ) AS fail_incr
+			 , IFNULL(hst_ip,'') hst_ip
+		  FROM WRKLOGTB A1
+		 WHERE knd = #{knd}
+		   AND bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+		   AND wrk_dt LIKE CONCAT(#{day},'%')
+		 ORDER BY wrk_dt DESC
+	</select>
+
+	<select id="findLogLst" resultType="hashmap" parameterType="hashmap">
+		SELECT wrk_dt
+			 , knd
+			 , bms_id
+			 , bts_id
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.suc_yon = B1.com_cod
+	           ) suc_yon
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.typ = B1.com_cod
+	           ) typ
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.lvl = B1.com_cod
+	           ) lvl
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.mtd = B1.com_cod
+	           ) mtd
+			 , pas_tme
+			 , exe_tme
+			 , kep_pod
+			 , hst_ip
+		  FROM WRKLOGTB A1
+		 WHERE knd = #{knd}
+		   AND bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+		 ORDER BY wrk_dt DESC
+		 LIMIT 1
+	</select>
+
+	<select id="findLogList" resultType="hashmap" parameterType="hashmap">
+		SELECT knd
+			 , date_format(wrk_dt, '%Y-%m-%d %H:%i:%s') wrk_dt_format
+			 , wrk_dt
+			 , bms_id
+			 , bts_id
+			 , suc_yon
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.suc_yon = B1.com_cod
+	           ) suc_yon_nam
+			 , typ
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.typ = B1.com_cod
+	           ) typ_nam
+			 , lvl
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.lvl = B1.com_cod
+	           ) lvl_nam
+			 , mtd
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.mtd = B1.com_cod
+	           ) mtd_nam
+			 , pas_tme
+			 , exe_tme
+			 , kep_pod
+			 , hst_ip
+		  FROM WRKLOGTB A1
+		 WHERE knd = #{knd}
+		   AND bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+	</select>
+
+	<select id="findLogDetail" resultType="hashmap" parameterType="hashmap">
+		SELECT b.log log
+		  FROM WRKLOGTB a
+			 , WRKLOGDETTB b
+		 WHERE a.knd = b.knd
+		   AND a.seq = b.seq
+		   AND a.wrk_dt = b.wrk_dt
+		   AND a.knd = #{knd}
+		   AND a.seq = #{seq}
+		   AND a.wrk_dt = #{day}
+		   AND a.bms_id = #{bms_id}
+		   AND a.bts_id = #{bts_id}
+		 GROUP BY a.wrk_dt
+	</select>
+
+	<select id="findLstLog" resultType="hashmap" parameterType="hashmap">
+		SELECT wrk_dt
+			 , bms_id
+			 , bts_id
+			 , suc_yon
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.suc_yon = B1.com_cod
+	           ) suc_yon_nam
+			 , typ
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.typ = B1.com_cod
+	           ) typ_nam
+			 , lvl
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.lvl = B1.com_cod
+	           ) lvl_nam
+			 , mtd
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.mtd = B1.com_cod
+	           ) mtd_nam
+			 , pas_tme
+			 , exe_tme
+			 , kep_pod
+			 , hst_ip
+		  FROM WRKLOGTB A1
+		 WHERE knd = #{knd}
+		   AND suc_yon = 'S01'
+		   AND bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+		 ORDER BY wrk_dt DESC
+		 LIMIT 1
+	</select>
+
+	<select id="findLogDetailMap" resultType="hashmap" parameterType="hashmap">
+		SELECT b.seq
+			 , b.knd
+			 , b.wrk_dt
+			 , b.log
+		  FROM WRKLOGTB a
+			 , WRKLOGDETTB b
+		 WHERE a.seq = b.seq
+		   AND a.knd = b.knd
+		   AND a.wrk_dt = b.wrk_dt
+		   AND a.knd = #{knd}
+		   AND a.wrk_dt = #{wrk_dt}
+		   AND a.bms_id = #{bms_id}
+		   AND a.bts_id = #{bts_id}
+		 ORDER by a.seq DESC
+		 limit 1
+	</select>
+	
+	<insert id="insertLog" parameterType="hashmap">
+		INSERT INTO WRKLOGTB
+		     (
+			   knd
+			 , wrk_dt
+			 , bms_id
+			 , bts_id
+		<if test="suc_yon != null and suc_yon != ''">
+			 , suc_yon
+		</if>
+		<if test="typ != null and typ != ''">
+			 , typ
+		</if>
+		<if test="lvl != null and lvl != ''">
+			 , lvl
+		</if>
+		<if test="mtd != null and mtd != ''">
+			 , mtd
+		</if>
+		<if test="pas_tme != null and pas_tme != ''">
+			 , pas_tme
+		</if>
+		<if test="exe_tme != null and exe_tme != ''">
+			 , exe_tme
+		</if>
+		<if test="kep_pod != null and kep_pod != ''">
+			 , kep_pod
+		</if>
+		<if test="exe_pod != null and exe_pod != ''">
+			 , exe_pod
+		</if>
+		<if test="hst_ip != null and hst_ip != ''">
+			 , hst_ip
+		</if>
+		     )
+		VALUES
+		     (
+			   #{knd}
+			 , #{wrk_dt}
+			 , #{bms_id}
+			 , #{bts_id}
+		<if test="suc_yon != null and suc_yon != ''">
+			 , #{suc_yon}
+		</if>
+		<if test="typ != null and typ != ''">
+			 , #{typ}
+		</if>
+		<if test="lvl != null and lvl != ''">
+			 , #{lvl}
+		</if>
+		<if test="mtd != null and mtd != ''">
+			 , #{mtd}
+		</if>
+		<if test="pas_tme != null and pas_tme != ''">
+			 , #{pas_tme}
+		</if>
+		<if test="exe_tme != null and exe_tme != ''">
+			 , #{exe_tme}
+		</if>
+		<if test="kep_pod != null and kep_pod != ''">
+			 , #{kep_pod}
+		</if>
+		<if test="exe_pod != null and exe_pod != ''">
+			 , #{exe_pod}
+		</if>
+		<if test="hst_ip != null and hst_ip != ''">
+			 , #{hst_ip}
+		</if>
+		     )
+	</insert>
+	
+	<insert id="insertLogDetail" parameterType="hashmap">
+		<selectKey keyProperty="seq" resultType="String" order="BEFORE">
+	  		SELECT MAX(seq) FROM WRKLOGTB
+	  	</selectKey>
+		INSERT INTO WRKLOGDETTB
+		     (
+			   seq
+			 , knd
+		     , wrk_dt
+		<if test="log != null and log != ''">
+			 , log
+		</if>
+		     )
+		VALUES
+		     (
+		       #{seq}
+		     , #{knd}
+		     , #{wrk_dt}
+		<if test="log != null and log != ''">
+			 , #{log}
+		</if>
+		     )
+	</insert>
+	
+	<select id="findMngSvrNam" resultType="hashmap" parameterType="hashmap">
+		SELECT bms_nam
+		  FROM BAKMNGSVRTB
+		 WHERE bms_id = #{bms_id}
+	</select>
+	
+	<select id="findTgtSvrNam" resultType="hashmap" parameterType="hashmap">
+		SELECT bts_nam
+		  FROM BAKTGTSVRTB
+		 WHERE bts_id = #{bts_id}
+	</select>
+
+	<select id="findBakSet" resultType="hashmap" parameterType="hashmap">
+		SELECT bms_id
+			 , bts_id
+			 , msq_clt_utl_pth
+			 , mng_xtr_bny_log_pth
+			 , sou_db
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE sou_db = B1.com_cod
+	           ) sou_db_cdname
+			 , cnn_typ
+			 , pot_num
+			 , hst_ip
+			 , bts_usr
+			 , bts_pwd
+			 , ssh_usr
+			 , tmp_dir
+			 , bak_typ
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE bak_typ = B1.com_cod
+	           ) bak_typ_cdname
+			 , bak_typ_itm
+			 , bak_typ_tbe
+			 , reg_dt
+			 , upd_dt
+		  FROM BAKSETTB
+		 WHERE bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+	</select>
+	
+	<select id="findType" resultType="hashmap" parameterType="hashmap">
+		SELECT com_cod
+			 , pet_cod
+			 , com_cod_nam
+			 , com_cod_cmt
+		  FROM COMCODTB
+		 WHERE 1=1
+		<if test="com_cod != null and com_cod != ''">
+		   AND com_cod = #{com_cod}
+		</if>
+		<if test="pet_cod != null and pet_cod != ''">
+		   AND pet_cod = #{pet_cod}
+		</if>
+	</select>
+	
+	<update id="insertBakSet" parameterType="hashmap">
+		INSERT INTO BAKSETTB
+		     (
+		       bms_id
+			 , bts_id
+		<if test="msq_clt_utl_pth != null and msq_clt_utl_pth != ''">
+			 , msq_clt_utl_pth
+		</if>
+		<if test="mng_xtr_bny_log_pth != null and mng_xtr_bny_log_pth != ''">
+			 , mng_xtr_bny_log_pth
+		</if>
+		<if test="sou_db != null and sou_db != ''">
+			 , sou_db
+		</if>
+		<if test="cnn_typ != null and cnn_typ != ''">
+			 , cnn_typ
+		</if>
+		<if test="pot_num != null and pot_num != ''">
+			 , pot_num
+		</if>
+		<if test="hst_ip != null and hst_ip != ''">
+			 , hst_ip
+		</if>
+		<if test="bts_usr != null and bts_usr != ''">
+			 , bts_usr
+		</if>
+		<if test="bts_pwd != null and bts_pwd != ''">
+			 , bts_pwd
+		</if>
+		<if test="ssh_usr != null and ssh_usr != ''">
+			 , ssh_usr
+		</if>
+		<if test="tmp_dir != null and tmp_dir != ''">
+			 , tmp_dir
+		</if>
+		<if test="bak_typ != null and bak_typ != ''">
+			 , bak_typ
+		</if>
+		<if test="bak_typ_itm != null and bak_typ_itm != ''">
+			 , bak_typ_itm
+		</if>
+		<if test="bak_typ_tbe != null and bak_typ_tbe != ''">
+			 , bak_typ_tbe
+		</if>
+			 , reg_dt
+		     )
+		VALUES
+		     (
+		       #{bms_id}
+			 , #{bts_id}
+		<if test="msq_clt_utl_pth != null and msq_clt_utl_pth != ''">
+			 , #{msq_clt_utl_pth}
+		</if>
+		<if test="mng_xtr_bny_log_pth != null and mng_xtr_bny_log_pth != ''">
+			 , #{mng_xtr_bny_log_pth}
+		</if>
+		<if test="sou_db != null and sou_db != ''">
+			 , #{sou_db}
+		</if>
+		<if test="cnn_typ != null and cnn_typ != ''">
+			 , #{cnn_typ}
+		</if>
+		<if test="pot_num != null and pot_num != ''">
+			 , #{pot_num}
+		</if>
+		<if test="hst_ip != null and hst_ip != ''">
+			 , #{hst_ip}
+		</if>
+		<if test="bts_usr != null and bts_usr != ''">
+			 , #{bts_usr}
+		</if>
+		<if test="bts_pwd != null and bts_pwd != ''">
+			 , #{bts_pwd}
+		</if>
+		<if test="ssh_usr != null and ssh_usr != ''">
+			 , #{ssh_usr}
+		</if>
+		<if test="tmp_dir != null and tmp_dir != ''">
+			 , #{tmp_dir}
+		</if>
+		<if test="bak_typ != null and bak_typ != ''">
+			 , #{bak_typ}
+		</if>
+		<if test="bak_typ_itm != null and bak_typ_itm != ''">
+			 , #{bak_typ_itm}
+		</if>
+		<if test="bak_typ_tbe != null and bak_typ_tbe != ''">
+			 , #{bak_typ_tbe}
+		</if>
+			 , NOW()
+		     )
+            ON DUPLICATE KEY
+        UPDATE upd_dt = NOW()
+			 , msq_clt_utl_pth = #{msq_clt_utl_pth}
+			 , mng_xtr_bny_log_pth = #{mng_xtr_bny_log_pth}
+			 , sou_db = #{sou_db}
+			 , cnn_typ = #{cnn_typ}
+			 , pot_num = #{pot_num}
+			 , hst_ip = #{hst_ip}
+			 , bts_usr = #{bts_usr}
+			 , bts_pwd = #{bts_pwd}
+			 , ssh_usr = #{ssh_usr}
+			 , tmp_dir = #{tmp_dir}
+			 , bak_typ = #{bak_typ}
+			 , bak_typ_itm = #{bak_typ_itm}
+			 , bak_typ_tbe = #{bak_typ_tbe}
+	</update>
+	
+	<update id="updateBakSetIP" parameterType="hashmap">
+		UPDATE BAKSETTB
+		   SET upd_dt = NOW()
+			 , hst_ip = #{hst_ip}
+		 WHERE bms_id = #{bms_id}
+	</update>
+	
+	<update id="updateTgtSvrIP" parameterType="hashmap">
+		UPDATE BAKTGTSVRTB
+		   SET upd_dt = NOW()
+			 , bts_ip = #{bts_ip}
+		 WHERE bts_pid = #{bts_pid}
+	</update>
+	
+	<update id="updateBakSetTgt" parameterType="hashmap">
+		UPDATE BAKSETTB
+		   SET upd_dt = NOW()
+			 , pot_num = #{pot_num}
+			 , bts_usr = #{bts_usr}
+			 , bts_pwd = #{bts_pwd}
+		 WHERE bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+	</update>
+
+	<select id="findBakMtd" resultType="hashmap" parameterType="hashmap">
+		SELECT bms_id
+			 , bts_id
+			 , bny_pth
+			 , use_mmy
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE use_mmy = B1.com_cod
+	           ) use_mmy_cdname
+			 , pel
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE pel = B1.com_cod
+	           ) pel_cdname
+			 , trt
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE trt = B1.com_cod
+	           ) trt_cdname
+			 , cpr
+			 , xtr_opt
+			 , rmt_msq_bny_pth
+			 , xtr_bny_log_pth
+			 , dft_fil
+			 , dft_grp
+			 , lck_opt
+			 , cha_set
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE cha_set = B1.com_cod
+	           ) cha_set_cdname
+			 , fsh_log
+			 , msq_opt
+			 , msq_bny_log_pth
+			 , avt_nam
+			 , reg_dt
+			 , upd_dt
+		  FROM BAKMTDTB
+		 WHERE bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+	</select>
+	
+	<update id="insertBakMtd" parameterType="hashmap">
+		INSERT INTO BAKMTDTB
+		     (
+		       bms_id
+			 , bts_id
+		<if test="bny_pth != null and bny_pth != ''">
+			 , bny_pth
+		</if>
+		<if test="use_mmy != null and use_mmy != ''">
+			 , use_mmy
+		</if>
+		<if test="pel != null and pel != ''">
+			 , pel
+		</if>
+		<if test="trt != null and trt != ''">
+			 , trt
+		</if>
+		<if test="cpr != null and cpr != ''">
+			 , cpr
+		</if>
+		<if test="xtr_opt != null and xtr_opt != ''">
+			 , xtr_opt
+		</if>
+		<if test="rmt_msq_bny_pth != null and rmt_msq_bny_pth != ''">
+			 , rmt_msq_bny_pth
+		</if>
+		<if test="xtr_bny_log_pth != null and xtr_bny_log_pth != ''">
+			 , xtr_bny_log_pth
+		</if>
+		<if test="dft_fil != null and dft_fil != ''">
+			 , dft_fil
+		</if>
+		<if test="dft_grp != null and dft_grp != ''">
+			 , dft_grp
+		</if>
+		<if test="lck_opt != null and lck_opt != ''">
+			 , lck_opt
+		</if>
+		<if test="cha_set != null and cha_set != ''">
+			 , cha_set
+		</if>
+		<if test="fsh_log != null and fsh_log != ''">
+			 , fsh_log
+		</if>
+		<if test="msq_opt != null and msq_opt != ''">
+			 , msq_opt
+		</if>
+		<if test="msq_bny_log_pth != null and msq_bny_log_pth != ''">
+			 , msq_bny_log_pth
+		</if>
+		<if test="avt_nam != null and avt_nam != ''">
+			 , avt_nam
+		</if>
+			 , reg_dt
+		     )
+		VALUES
+		     (
+		       #{bms_id}
+			 , #{bts_id}
+		<if test="bny_pth != null and bny_pth != ''">
+			 , #{bny_pth}
+		</if>
+		<if test="use_mmy != null and use_mmy != ''">
+			 , #{use_mmy}
+		</if>
+		<if test="pel != null and pel != ''">
+			 , #{pel}
+		</if>
+		<if test="trt != null and trt != ''">
+			 , #{trt}
+		</if>
+		<if test="cpr != null and cpr != ''">
+			 , #{cpr}
+		</if>
+		<if test="xtr_opt != null and xtr_opt != ''">
+			 , #{xtr_opt}
+		</if>
+		<if test="rmt_msq_bny_pth != null and rmt_msq_bny_pth != ''">
+			 , #{rmt_msq_bny_pth}
+		</if>
+		<if test="xtr_bny_log_pth != null and xtr_bny_log_pth != ''">
+			 , #{xtr_bny_log_pth}
+		</if>
+		<if test="dft_fil != null and dft_fil != ''">
+			 , #{dft_fil}
+		</if>
+		<if test="dft_grp != null and dft_grp != ''">
+			 , dft_grp
+		</if>
+		<if test="lck_opt != null and lck_opt != ''">
+			 , #{lck_opt}
+		</if>
+		<if test="cha_set != null and cha_set != ''">
+			 , #{cha_set}
+		</if>
+		<if test="fsh_log != null and fsh_log != ''">
+			 , #{fsh_log}
+		</if>
+		<if test="msq_opt != null and msq_opt != ''">
+			 , #{msq_opt}
+		</if>
+		<if test="msq_bny_log_pth != null and msq_bny_log_pth != ''">
+			 , #{msq_bny_log_pth}
+		</if>
+		<if test="avt_nam != null and avt_nam != ''">
+			 , #{avt_nam}
+		</if>
+			 , NOW()
+		     )
+            ON DUPLICATE KEY
+        UPDATE upd_dt = NOW()
+			 , bny_pth = #{bny_pth}
+			 , use_mmy = #{use_mmy}
+			 , pel = #{pel}
+			 , trt = #{trt}
+			 , cpr = #{cpr}
+			 , xtr_opt = #{xtr_opt}
+			 , rmt_msq_bny_pth = #{rmt_msq_bny_pth}
+			 , xtr_bny_log_pth = #{xtr_bny_log_pth}
+			 , dft_fil = #{dft_fil}
+			 , lck_opt = #{lck_opt}
+			 , cha_set = #{cha_set}
+			 , fsh_log = #{fsh_log}
+			 , msq_opt = #{msq_opt}
+			 , msq_bny_log_pth = #{msq_bny_log_pth}
+			 , avt_nam = #{avt_nam}
+	</update>
+	
+	<select id="findBakScdNam" resultType="hashmap" parameterType="hashmap">
+		SELECT scd_nam
+		  FROM BAKSCDTB
+		 WHERE bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+	</select>
+	<select id="findBakScdNamList" resultType="hashmap" parameterType="hashmap">
+		SELECT cron_nam
+		  FROM BAKSCDTB
+		 WHERE bms_id = #{bms_id}
+	</select>
+	<select id="findMngbtsId" resultType="hashmap" parameterType="hashmap">
+		SELECT cron_nam
+		  FROM BAKSCDTB
+		 WHERE bts_id = #{bts_id}
+	</select>
+	<select id="findBakScd" resultType="hashmap" parameterType="hashmap">
+		SELECT bms_id
+			 , bts_id
+			 , scd_nam
+			 , scd_con
+			 , cron_nam
+			 , scd_lvl
+			 , pod_set
+			 , pod_set_itm
+			 , tme_set
+			 , kep_pod
+			 , kep_pod_itm
+			 , typ
+			 , mtd
+			 , reg_dt
+			 , upd_dt
+		  FROM BAKSCDTB
+		 WHERE bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+		   AND scd_nam = #{scd_nam}
+	</select>
+	
+	<select id="findBakScdList" resultType="hashmap">
+		SELECT bms_id
+			 , bts_id
+			 , scd_nam
+			 , scd_con
+			 , scd_lvl
+			 , cron_nam
+			 , pod_set
+			 , pod_set_itm
+			 , tme_set
+			 , kep_pod
+			 , kep_pod_itm
+			 , typ
+			 , mtd
+			 , reg_dt
+			 , upd_dt
+		  FROM BAKSCDTB
+	</select>
+	
+	<insert id="insertBakScd" parameterType="hashmap">
+		INSERT INTO BAKSCDTB
+		     (
+		       bms_id
+			 , bts_id
+			 , scd_nam
+		<if test="scd_con != null and scd_con != ''">
+			 , scd_con
+		</if>
+		<if test="scd_lvl != null and scd_lvl != ''">
+			 , scd_lvl
+		</if>
+		<if test="cron_nam != null and cron_nam != ''">
+			 , cron_nam
+		</if>
+		<if test="pod_set != null and pod_set != ''">
+			 , pod_set
+		</if>
+		<if test="pod_set_itm != null and pod_set_itm != ''">
+			 , pod_set_itm
+		</if>
+		<if test="tme_set != null and tme_set != ''">
+			 , tme_set
+		</if>
+		<if test="kep_pod != null and kep_pod != ''">
+			 , kep_pod
+		</if>
+		<if test="kep_pod_itm != null and kep_pod_itm != ''">
+			 , kep_pod_itm
+		</if>
+		<if test="typ != null and typ != ''">
+			 , typ
+		</if>
+		<if test="mtd != null and mtd != ''">
+			 , mtd
+		</if>
+			 , reg_dt
+		     )
+		VALUES
+		     (
+		       #{bms_id}
+			 , #{bts_id}
+			 , #{scd_nam}
+		<if test="scd_con != null and scd_con != ''">
+			 , #{scd_con}
+		</if>
+		<if test="scd_lvl != null and scd_lvl != ''">
+			 , #{scd_lvl}
+		</if>
+		<if test="cron_nam != null and cron_nam != ''">
+			 , #{cron_nam}
+		</if>
+		<if test="pod_set != null and pod_set != ''">
+			 , #{pod_set}
+		</if>
+		<if test="pod_set_itm != null and pod_set_itm != ''">
+			 , #{pod_set_itm}
+		</if>
+		<if test="tme_set != null and tme_set != ''">
+			 , #{tme_set}
+		</if>
+		<if test="kep_pod != null and kep_pod != ''">
+			 , #{kep_pod}
+		</if>
+		<if test="kep_pod_itm != null and kep_pod_itm != ''">
+			 , #{kep_pod_itm}
+		</if>
+		<if test="typ != null and typ != ''">
+			 , #{typ}
+		</if>
+		<if test="mtd != null and mtd != ''">
+			 , #{mtd}
+		</if>
+			 , NOW()
+		     )
+	</insert>
+	
+	<update id="updateBakScd" parameterType="hashmap">
+        UPDATE BAKSCDTB
+           SET upd_dt = NOW()
+		<if test="new_scd_nam != null and new_scd_nam != ''">
+           	 , scd_nam = #{new_scd_nam}
+		</if>
+			 , cron_nam = #{cron_nam}	
+			 , scd_con = #{scd_con}
+			 , scd_lvl = #{scd_lvl}
+			 , pod_set = #{pod_set}
+			 , pod_set_itm = #{pod_set_itm}
+			 , tme_set = #{tme_set}
+			 , kep_pod = #{kep_pod}
+			 , kep_pod_itm = #{kep_pod_itm}
+			 , typ = #{typ}
+			 , mtd = #{mtd}
+		 WHERE bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+		   AND cron_nam = #{old_cron_nam}
+	</update>
+	
+	<delete id="deleteBakScd" parameterType="hashmap">
+		DELETE FROM BAKSCDTB
+		 <where>
+		 <if test="bms_id != null and bms_id != ''">
+		 	bms_id = #{bms_id}
+	    </if>
+		  <if test="bts_id != null and bts_id != ''">	
+		   AND bts_id = #{bts_id}
+	   </if>
+	    <if test="scd_nam != null and scd_nam != ''">
+		   AND scd_nam = #{scd_nam}
+	   </if>
+	   </where>
+	</delete>
+	
+	<select id="findRsrSet" resultType="hashmap" parameterType="hashmap">
+		SELECT bms_id
+			 , bts_id
+			 , rsr_dat_dir
+			 , msq_clt_utl_pth
+			 , cnn_typ
+			 , pot_num
+			 , hst_ip
+			 , tmp_dir
+			 , rmt_msq_bny_pth
+			 , xtr_bny_log_pth
+			 , sto_yon
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE sto_yon = B1.com_cod
+	           ) sto_yon_cdname
+			 , svc_sta_nam
+			 , os_id
+			 , os_pwd
+			 , ssl_opt
+			 , db_id
+			 , db_pwd
+			 , rsr_dft_fil
+			 , cpr
+			 , ins_num
+			 , reg_dt
+			 , upd_dt
+		  FROM RSRSETTB
+		 WHERE bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+	</select>
+	
+	<update id="insertRsrSet" parameterType="hashmap">
+		INSERT INTO RSRSETTB
+		     (
+		       bms_id
+			 , bts_id
+		<if test="rsr_dat_dir != null and rsr_dat_dir != ''">
+			 , rsr_dat_dir
+		</if>
+		<if test="msq_clt_utl_pth != null and msq_clt_utl_pth != ''">
+			 , msq_clt_utl_pth
+		</if>
+		<if test="cnn_typ != null and cnn_typ != ''">
+			 , cnn_typ
+		</if>
+		<if test="pot_num != null and pot_num != ''">
+			 , pot_num
+		</if>
+		<if test="hst_ip != null and hst_ip != ''">
+			 , hst_ip
+		</if>
+		<if test="tmp_dir != null and tmp_dir != ''">
+			 , tmp_dir
+		</if>
+		<if test="rmt_msq_bny_pth != null and rmt_msq_bny_pth != ''">
+			 , rmt_msq_bny_pth
+		</if>
+		<if test="xtr_bny_log_pth != null and xtr_bny_log_pth != ''">
+			 , xtr_bny_log_pth
+		</if>
+		<if test="sto_yon != null and sto_yon != ''">
+			 , sto_yon
+		</if>
+		<if test="svc_sta_nam != null and svc_sta_nam != ''">
+			 , svc_sta_nam
+		</if>
+		<if test="os_id != null and os_id != ''">
+			 , os_id
+		</if>
+		<if test="os_pwd != null and os_pwd != ''">
+			 , os_pwd
+		</if>
+		<if test="ssl_opt != null and ssl_opt != ''">
+			 , ssl_opt
+		</if>
+		<if test="db_id != null and db_id != ''">
+			 , db_id
+		</if>
+		<if test="db_pwd != null and db_pwd != ''">
+			 , db_pwd
+		</if>
+		<if test="rsr_dft_fil != null and rsr_dft_fil != ''">
+			 , rsr_dft_fil
+		</if>
+		<if test="cpr != null and cpr != ''">
+			 , cpr
+		</if>
+		<if test="ins_num != null and ins_num != ''">
+			 , ins_num
+		</if>
+			 , reg_dt
+		     )
+		VALUES
+		     (
+		       #{bms_id}
+			 , #{bts_id}
+		<if test="rsr_dat_dir != null and rsr_dat_dir != ''">
+			 , #{rsr_dat_dir}
+		</if>
+		<if test="msq_clt_utl_pth != null and msq_clt_utl_pth != ''">
+			 , #{msq_clt_utl_pth}
+		</if>
+		<if test="cnn_typ != null and cnn_typ != ''">
+			 , #{cnn_typ}
+		</if>
+		<if test="pot_num != null and pot_num != ''">
+			 , #{pot_num}
+		</if>
+		<if test="hst_ip != null and hst_ip != ''">
+			 , #{hst_ip}
+		</if>
+		<if test="tmp_dir != null and tmp_dir != ''">
+			 , #{tmp_dir}
+		</if>
+		<if test="rmt_msq_bny_pth != null and rmt_msq_bny_pth != ''">
+			 , #{rmt_msq_bny_pth}
+		</if>
+		<if test="xtr_bny_log_pth != null and xtr_bny_log_pth != ''">
+			 , #{xtr_bny_log_pth}
+		</if>
+		<if test="sto_yon != null and sto_yon != ''">
+			 , #{sto_yon}
+		</if>
+		<if test="svc_sta_nam != null and svc_sta_nam != ''">
+			 , #{svc_sta_nam}
+		</if>
+		<if test="os_id != null and os_id != ''">
+			 , #{os_id}
+		</if>
+		<if test="os_pwd != null and os_pwd != ''">
+			 , #{os_pwd}
+		</if>
+		<if test="ssl_opt != null and ssl_opt != ''">
+			 , #{ssl_opt}
+		</if>
+		<if test="db_id != null and db_id != ''">
+			 , #{db_id}
+		</if>
+		<if test="db_pwd != null and db_pwd != ''">
+			 , #{db_pwd}
+		</if>
+		<if test="rsr_dft_fil != null and rsr_dft_fil != ''">
+			 , #{rsr_dft_fil}
+		</if>
+		<if test="cpr != null and cpr != ''">
+			 , #{cpr}
+		</if>
+		<if test="ins_num != null and ins_num != ''">
+			 , #{ins_num}
+		</if>
+			 , NOW()
+		     )
+            ON DUPLICATE KEY
+        UPDATE upd_dt = NOW()
+			 , rsr_dat_dir = #{rsr_dat_dir}
+			 , msq_clt_utl_pth = #{msq_clt_utl_pth}
+			 , cnn_typ = #{cnn_typ}
+			 , pot_num = #{pot_num}
+			 , hst_ip = #{hst_ip}
+			 , tmp_dir = #{tmp_dir}
+			 , rmt_msq_bny_pth = #{rmt_msq_bny_pth}
+			 , xtr_bny_log_pth = #{xtr_bny_log_pth}
+			 , sto_yon = #{sto_yon}
+			 , svc_sta_nam = #{svc_sta_nam}
+			 , os_id = #{os_id}
+			 , os_pwd = #{os_pwd}
+			 , ssl_opt = #{ssl_opt}
+			 , db_id = #{db_id}
+			 , db_pwd = #{db_pwd}
+			 , rsr_dft_fil = #{rsr_dft_fil}
+			 , cpr = #{cpr}
+			 , ins_num = #{ins_num}
+	</update>
+	
+	<insert id="insertBakRun" parameterType="hashmap">
+		INSERT INTO BAKRUNTB
+		     (
+		       run_id
+			 , run_pid
+		<if test="run_nam != null and run_nam != ''">
+			 , run_nam
+		</if>
+		<if test="run_lvl != null and run_lvl != ''">
+			 , run_lvl
+		</if>
+			 , bms_id
+			 , bts_id
+		<if test="bts_nam != null and bts_nam != ''">
+			 , bts_nam
+		</if>
+			 , knd
+		<if test="wrk_dt != null and wrk_dt != ''">
+			 , wrk_dt
+		</if>
+		<if test="lvl != null and lvl != ''">
+			 , lvl
+		</if>
+		<if test="mtd != null and mtd != ''">
+			 , mtd
+		</if>
+		<if test="typ != null and typ != ''">
+			 , typ
+		</if>
+		<if test="kep_pod != null and kep_pod != ''">
+			 , kep_pod
+		</if>
+		<if test="suc_yon != null and suc_yon != ''">
+			 , suc_yon
+		</if>
+		     )
+		VALUES
+		     (
+		       #{run_id}
+			 , #{run_pid}
+		<if test="run_nam != null and run_nam != ''">
+			 , #{run_nam}
+		</if>
+		<if test="run_lvl != null and run_lvl != ''">
+			 , #{run_lvl}
+		</if>
+			 , #{bms_id}
+			 , #{bts_id}
+		<if test="bts_nam != null and bts_nam != ''">
+			 , #{bts_nam}
+		</if>
+			 , #{knd}
+		<if test="wrk_dt != null and wrk_dt != ''">
+			 , #{wrk_dt}
+		</if>
+		<if test="lvl != null and lvl != ''">
+			 , #{lvl}
+		</if>
+		<if test="mtd != null and mtd != ''">
+			 , #{mtd}
+		</if>
+		<if test="typ != null and typ != ''">
+			 , #{typ}
+		</if>
+		<if test="kep_pod != null and kep_pod != ''">
+			 , #{kep_pod}
+		</if>
+		<if test="suc_yon != null and suc_yon != ''">
+			 , #{suc_yon}
+		</if>
+		     )
+	</insert>
+	
+	<update id="updateBakRunSucYon" parameterType="hashmap">
+        UPDATE BAKRUNTB
+           SET suc_yon = #{suc_yon}
+         WHERE run_id = #{run_id}
+	</update>
+
+	<select id="findRunFllMaxId" resultType="hashmap" parameterType="hashmap">
+		SELECT IFNULL(MAX(run_id), 10)+1 max_run_id
+			 , 1 max_run_pid
+		  FROM BAKRUNTB
+		 WHERE run_pid = 1
+		   AND bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+	</select>
+
+	<select id="findRunIncMaxId1" resultType="hashmap" parameterType="hashmap">
+		SELECT CONVERT(CONCAT(MAX(run_id),'000')+1 ,int) max_run_id
+			 , MAX(run_id) max_run_pid
+		  FROM BAKRUNTB
+		 WHERE run_lvl = 1
+		   AND bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+	</select>
+
+	<select id="findRunIncMaxId2" resultType="hashmap" parameterType="hashmap">
+		SELECT MAX(run_id)+1 max_run_id
+			 , MAX(run_pid) max_run_pid
+		  FROM BAKRUNTB
+		 WHERE run_lvl = 2
+		   AND bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+	</select>
+	
+	<select id="findBakRun" resultType="hashmap" parameterType="hashmap">
+		SELECT run_id
+			 , run_pid
+			 , run_nam
+			 , run_lvl
+			 , bms_id
+			 , bts_id
+			 , bts_nam
+			 , knd
+			 , wrk_dt
+			 , lvl
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE lvl = B1.com_cod
+	           ) lvl_name
+			 , mtd
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE mtd = B1.com_cod
+	           ) mtd_name
+			 , typ
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE typ = B1.com_cod
+	           ) typ_name
+			 , kep_pod
+			 , suc_yon
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE typ = B1.com_cod
+	           ) suc_yon_name
+		  FROM BAKRUNTB
+		<where>
+		<if test="knd != null and knd != ''">
+			   knd = #{knd}
+		</if>
+		<if test="bms_id != null and bms_id != ''">
+			   AND bms_id = #{bms_id}
+		</if>
+		<if test="bts_id != null and bts_id != ''">
+			   AND bts_id = #{bts_id}
+		</if>
+		<if test="wrk_dt != null and wrk_dt != ''">
+			   AND wrk_dt = #{wrk_dt}
+		</if>
+		<if test="suc_yon != null and suc_yon != ''">
+			   AND suc_yon = #{suc_yon}
+		</if>
+		<if test="lvl != null and lvl != ''">
+			   AND lvl = #{lvl}
+		</if>
+		<if test="mtd != null and mtd != ''">
+			   AND mtd = #{mtd}
+		</if>
+		</where>
+	</select>
+	
+	<select id="findBakRunLst" resultType="hashmap" parameterType="hashmap">
+		SELECT run_id
+			 , run_pid
+			 , run_nam
+			 , run_lvl
+			 , bms_id
+			 , bts_id
+			 , bts_nam
+			 , knd
+			 , wrk_dt
+			 , lvl
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE lvl = B1.com_cod
+	           ) lvl_name
+			 , mtd
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE mtd = B1.com_cod
+	           ) mtd_name
+			 , typ
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE typ = B1.com_cod
+	           ) typ_name
+			 , kep_pod
+			 , suc_yon
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE typ = B1.com_cod
+	           ) suc_yon_name
+		  FROM BAKRUNTB
+		<where>
+		<if test="knd != null and knd != ''">
+			   knd = #{knd}
+		</if>
+		<if test="bms_id != null and bms_id != ''">
+			   AND bms_id = #{bms_id}
+		</if>
+		<if test="bts_id != null and bts_id != ''">
+			   AND bts_id = #{bts_id}
+		</if>
+		<if test="wrk_dt != null and wrk_dt != ''">
+			   AND wrk_dt = #{wrk_dt}
+		</if>
+		<if test="suc_yon != null and suc_yon != ''">
+			   AND suc_yon = #{suc_yon}
+		</if>
+		<if test="lvl != null and lvl != ''">
+			   AND lvl = #{lvl}
+		</if>
+		<if test="mtd != null and mtd != ''">
+			   AND mtd = #{mtd}
+		</if>
+		</where>
+		 ORDER BY wrk_dt DESC
+		 LIMIT 1
+	</select>
+	
+	<select id="findLstFullbak" resultType="hashmap"  parameterType="hashmap">
+		SELECT wrk_dt last_fullbackup
+		  FROM WRKLOGTB
+		 WHERE knd = 'G01'
+		   AND bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+		   AND lvl = 'L01'
+		 ORDER BY seq DESC
+		 LIMIT 1
+	</select>
+	
+	<delete id="deleteRun" parameterType="hashmap">
+		DELETE FROM BAKRUNTB
+		 WHERE wrk_dt = #{wrk_dt}
+		   AND bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+	</delete>
+	
+	<delete id="deleteBakSet" parameterType="hashmap">
+		DELETE FROM BAKSETTB
+		<where>
+		<if test="bms_id != null and bms_id != ''">
+			bms_id = #{bms_id}
+	    </if>
+		<if test="bts_id != null and bts_id != ''">	
+			AND bts_id = #{bts_id}
+		</if>
+		</where>
+	</delete>
+	
+	<delete id="deleteBakMtd" parameterType="hashmap">
+		DELETE FROM BAKMTDTB
+		<where>
+		<if test="bms_id != null and bms_id != ''">
+			bms_id = #{bms_id}
+		</if>
+		<if test="bts_id != null and bts_id != ''">	
+			AND bts_id = #{bts_id}
+		</if>
+		</where>
+	</delete>
+	
+	<delete id="deleteRsrSet" parameterType="hashmap">
+		DELETE FROM RSRSETTB
+		<where>
+		<if test="bms_id != null and bms_id != ''">
+			bms_id = #{bms_id}
+		</if>
+		<if test="bts_id != null and bts_id != ''">	
+			AND bts_id = #{bts_id}
+		</if>
+		</where>
+	</delete>
+	
+	<delete id="deleteLogLv1" parameterType="hashmap">
+		DELETE t1, t2
+		  FROM WRKLOGTB t1, WRKLOGDETTB t2
+		 WHERE t1.seq = t2.seq
+		   AND t1.bms_id = #{bms_id}
+	</delete>
+	
+	<delete id="deleteLogLv2" parameterType="hashmap">
+		DELETE t1, t2
+		  FROM WRKLOGTB t1, WRKLOGDETTB t2
+		 WHERE t1.seq = t2.seq
+		   AND t1.bms_id = #{bms_id}
+		   AND t1.bts_id = #{bts_id}
+	</delete>
+	
+	<delete id="deleteBakRunLv1" parameterType="hashmap">
+		DELETE FROM BAKRUNTB
+		 WHERE bms_id = #{bms_id}
+	</delete>
+	
+	<delete id="deleteBakRunLv2" parameterType="hashmap">
+		DELETE FROM BAKRUNTB
+		 WHERE bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+	</delete>
+	
+	<select id="findMngSvrNamSea" resultType="hashmap" parameterType="hashmap">
+		SELECT bms_id
+			 , bms_pid
+			 , bms_nam
+			 , bms_ip
+			 , bms_pot
+			 , bms_usr
+			 , bms_pwd
+			 , bms_dir_sve
+		  FROM BAKMNGSVRTB
+		 WHERE 1 = 1
+		<if test="bms_id != null and bms_id != ''">
+		   AND bms_id = #{bms_id}
+		</if>
+		<if test="bms_nam != null and bms_nam != ''">
+		   AND bms_nam = #{bms_nam}
+		</if>
+	</select>
+
+	<select id="findTgtSvrNamSea" resultType="hashmap" parameterType="hashmap">
+		SELECT bts_id
+			 , bts_pid
+			 , bts_nam
+			 , bts_ip
+			 , bts_pot
+			 , bts_usr
+			 , bts_pwd
+			 , bts_mlt_ins
+		  FROM BAKTGTSVRTB
+		 WHERE 1 = 1
+		<if test="bts_id != null and bts_id != ''">
+		   AND bts_id = #{bts_id}
+		</if>
+		<if test="bts_pid != null and bts_pid != ''">
+		   AND bts_pid = #{bts_pid}
+		</if>
+		<if test="bts_nam != null and bts_nam != ''">
+		   AND bts_nam = #{bts_nam}
+		</if>
+	</select>
+
+	<select id="findLogDt" resultType="hashmap" parameterType="hashmap">
+		SELECT knd
+			 , date_format(wrk_dt, '%Y-%m-%d %H:%i:%s') wrk_dt_format
+			 , wrk_dt
+			 , bms_id
+			 , bts_id
+			 , suc_yon
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.suc_yon = B1.com_cod
+	           ) suc_yon_nam
+			 , typ
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.typ = B1.com_cod
+	           ) typ_nam
+			 , lvl
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.lvl = B1.com_cod
+	           ) lvl_nam
+			 , mtd
+			 , (
+	            SELECT com_cod_nam
+	              FROM COMCODTB B1
+	             WHERE A1.mtd = B1.com_cod
+	           ) mtd_nam
+			 , pas_tme
+			 , exe_tme
+			 , kep_pod
+			 , hst_ip
+		  FROM WRKLOGTB A1
+		 WHERE knd = #{knd}
+		   AND bms_id = #{bms_id}
+		   AND bts_id = #{bts_id}
+		   AND wrk_dt = #{wrk_dt}
+	</select>
+	
+</mapper>
