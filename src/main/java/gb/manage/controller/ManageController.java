@@ -1,6 +1,5 @@
 package gb.manage.controller;
 
-import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import gb.common.common.CommandMap;
 import gb.common.service.CommonService;
 import gb.common.util.EncryptUtil;
@@ -22,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -93,14 +93,23 @@ public class ManageController {
 		mv.addObject("update_result", commandMap.get("update_result"));
 		mv.addObject("delete_result", commandMap.get("delete_result"));
 		
-		/* 한페이지에 보여줄 Row수 지정할때 아래와같이 파라메터 넣어줌
-		commandMap.put("PAGE_ROW", 15);
-		*/
-		commandMap.put("PAGE_ROW", 5);
+		/* 한페이지에 보여줄 Row수 지정할때 아래와같이 파라메터 넣어줌 */
+		commandMap.put("pageCount", 5);
+		commandMap.put("displayRow", 5);
+		commandMap.put("TABLE", "USRTB");
 		Map<String,Object> resultMap = new HashMap<String, Object>();
 		resultMap = manageService.findUsr(commandMap.getMap());
-	    mv.addObject("paginationInfo", (PaginationInfo)resultMap.get("paginationInfo"));
+		System.out.println("resultMap==========");
+		System.out.println(resultMap);
+		System.out.println("//resultMap========");
+//	    mv.addObject("paginationInfo", (PaginationInfo)resultMap.get("paginationInfo"));
+	    mv.addObject("pagination", resultMap.get("pagination"));
 	    mv.addObject("list", resultMap.get("result"));
+	    
+	    
+	    
+	    
+	    
 	    
 		return mv;
 	}
@@ -388,10 +397,13 @@ public class ManageController {
 		/* 한페이지에 보여줄 Row수 지정할때 아래와같이 파라메터 넣어줌
 		commandMap.put("PAGE_ROW", 15);
 		*/
-		commandMap.put("PAGE_ROW", 5);
+		commandMap.put("pageCount", 5);
+		commandMap.put("displayRow", 5);
+		commandMap.put("TABLE", "MNGSVRTB");
 		Map<String,Object> resultMap = new HashMap<String, Object>();
 		resultMap = manageService.findSvr(commandMap.getMap());
-	    mv.addObject("paginationInfo", (PaginationInfo)resultMap.get("paginationInfo"));
+//	    mv.addObject("paginationInfo", (PaginationInfo)resultMap.get("paginationInfo"));
+		mv.addObject("pagination", resultMap.get("pagination"));
 	    mv.addObject("list", resultMap.get("result"));
 		
 		return mv;

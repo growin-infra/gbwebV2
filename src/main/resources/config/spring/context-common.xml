@@ -21,14 +21,14 @@
         <property name="maxInMemorySize" value="100000000" />
     </bean>
     
-    <bean id="textRenderer" class="egovframework.rte.ptl.mvc.tags.ui.pagination.DefaultPaginationRenderer"/>
-    <bean id="customRenderer" class="gb.common.util.CustomPaginationRenderer"/>   
-    <bean id="paginationManager" class="egovframework.rte.ptl.mvc.tags.ui.pagination.DefaultPaginationManager">
-        <property name="rendererType">
-            <map>
-                <entry key="text" value-ref="textRenderer"/>
-                <entry key="custom" value-ref="customRenderer"/>
-            </map>
-        </property>
-    </bean>
+<!--     <bean id="textRenderer" class="gb.common.pagination.DefaultPaginationRenderer"/> -->
+<!--     <bean id="customRenderer" class="gb.common.pagination.CustomPaginationRenderer"/>    -->
+<!--     <bean id="paginationManager" class="gb.common.pagination.DefaultPaginationManager"> -->
+<!--         <property name="rendererType"> -->
+<!--             <map> -->
+<!--                 <entry key="custom" value-ref="customRenderer"/> -->
+<!--                 <entry key="text" value-ref="textRenderer"/> -->
+<!--             </map> -->
+<!--         </property> -->
+<!--     </bean> -->
 </beans>

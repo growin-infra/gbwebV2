@@ -13,12 +13,14 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>gbwebV2</name>
-	<description>gbwebV2 for Spring Boot</description>
+	<description>gbwebV2 for Spring</description>
 	<properties>
 		<java.version>1.8</java.version>
 		<org.springframework-version>3.2.4.RELEASE</org.springframework-version>
 		<org.aspectj-version>1.7.3</org.aspectj-version>
 		<org.codehaus.jackson-version>1.9.13</org.codehaus.jackson-version>
+		<com.fasterxml.jackson.core-version>2.12.5</com.fasterxml.jackson.core-version>
+		<org.slf4j-version>1.6.4</org.slf4j-version>
 	</properties>
 	
 	<repositories>
@@ -26,13 +28,15 @@
 			<id>in-project</id>
 			<url>file://${project.basedir}/src/main/webapp/WEB-INF/lib</url>
 		</repository>
-		<repository>
-			<id>localrepo</id>
-			<url>file://D:/app/repository/</url>
-		</repository>
 	</repositories>
 	
 	<dependencies>
+		<dependency>
+		    <groupId>ch.ethz.ganymed</groupId>
+		    <artifactId>ganymed-ssh2</artifactId>
+		    <version>build210</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -86,6 +90,11 @@
 			<version>2.1</version>
 		</dependency>
 		
+		<dependency>
+		    <groupId>commons-el</groupId>
+		    <artifactId>commons-el</artifactId>
+		    <version>1.0</version>
+		</dependency>
 
 		<!-- AspectJ -->
 		<dependency>
@@ -143,26 +152,26 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.4</version>
+			<version>${org.slf4j-version}</version>
 		</dependency>
         
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
-			<version>1.6.4</version>
+			<version>${org.slf4j-version}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.4</version>
+			<version>${org.slf4j-version}</version>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
 		<dependency>
 		    <groupId>org.slf4j</groupId>
 		    <artifactId>slf4j-simple</artifactId>
-		    <version>1.6.4</version>
+		    <version>${org.slf4j-version}</version>
 		    <scope>test</scope>
 		</dependency>
 
@@ -191,18 +200,25 @@
 <!-- 			<version>${org.codehaus.jackson-version}</version> -->
 <!-- 		</dependency> -->
 		
-		<!-- agent -->
+		<!-- MappingJacksonJson2View -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-<!-- 			<scope>compile</scope> -->
-<!-- 			<optional>true</optional> -->
+			<version>${com.fasterxml.jackson.core-version}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
+			<version>${com.fasterxml.jackson.core-version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${com.fasterxml.jackson.core-version}</version>
+		</dependency>
+		
 
 		<!-- XML Converter -->
 		<dependency>
@@ -238,21 +254,6 @@
 			<artifactId>commons-codec</artifactId>
 			<version>1.10</version>
 		</dependency>
-
-		<!-- EgovProperty -->
-		<dependency>
-			<groupId>egovframework.rte</groupId>
-			<artifactId>egovframework.rte.fdl.property</artifactId>
-			<version>3.5.0</version>
-		</dependency>
-
-		<!-- Egov paging -->
-		<dependency>
-			<groupId>egovframework.rte</groupId>
-			<artifactId>egovframework.rte.ptl.mvc</artifactId>
-			<version>3.5.0</version>
-		</dependency>
-
 
 		<!-- Log4j -->
 		<dependency>
@@ -384,53 +385,17 @@
 			<artifactId>spring-security-taglibs</artifactId>
 			<version>${org.springframework-version}</version>
 		</dependency>
-		
-<!-- 		<dependency> -->
-<!-- 		    <groupId>org.apache.maven.plugins</groupId> -->
-<!-- 		    <artifactId>maven-compiler-plugin</artifactId> -->
-<!-- 		    <version>3.6.3</version> -->
-<!-- 		</dependency> -->
-		
-<!-- 		<dependency> -->
-<!-- 		    <groupId>org.springmodules</groupId> -->
-<!-- 		    <artifactId>spring-modules-validation</artifactId> -->
-<!-- 		    <version>0.9</version> -->
-<!-- 		</dependency> -->
+
         
 	</dependencies>
-	
+
 	<build>
-<!-- 	    <pluginManagement> -->
-<!-- 	        <plugins> -->
-<!-- 	            <plugin> -->
-<!-- 	                <groupId>org.apache.maven.plugins</groupId> -->
-<!-- 	                <artifactId>maven-compiler-plugin</artifactId> -->
-<!-- 	                <version>3.8.1</version> -->
-<!-- 	            </plugin>     -->
-<!-- 	        </plugins> -->
-<!-- 	    </pluginManagement> -->
+		<finalName>ROOT</finalName>
 		<plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.springframework.boot</groupId> -->
-<!-- 				<artifactId>spring-boot-maven-plugin</artifactId> -->
-<!-- 				<configuration> -->
-<!-- 					<excludes> -->
-<!-- 						<exclude> -->
-<!-- 							<groupId>org.projectlombok</groupId> -->
-<!-- 							<artifactId>lombok</artifactId> -->
-<!-- 						</exclude> -->
-<!-- 					</excludes> -->
-<!-- 				</configuration> -->
-<!-- 			</plugin> -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
 		</plugins>
 	</build>
 

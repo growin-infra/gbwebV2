@@ -354,11 +354,16 @@ function fn_popclose() {
 			
 			<!-- 페이징 -->
 			<div class="page2">
-				<ul>
-					<c:if test="${not empty paginationInfo}">
-				    	<ui:pagination paginationInfo = "${paginationInfo}" type="custom" jsFunction="svr_refresh"/>
+				<ul class="pagination pagination-warning" style="margin:0px;">
+					<c:if test="${pagination.startPage-1 != 0 }">
+						<li><a href="javascript:svr_refresh(${pagination.startPage-1})">&laquo;</a></li>
 					</c:if>
-					<input type="hidden" id="currentPageNo" name="currentPageNo" />
+					<c:forEach var="i" begin="${pagination.startPage }" end="${pagination.endPage }" varStatus="status">
+						<li <c:if test="${i eq pagination.currentPage }">class="active"</c:if>><a href="javascript:svr_refresh(${i})">${i}</a></li>
+					</c:forEach>
+					<c:if test="${pagination.endPage % pagination.pageCount == 0 && pagination.lastPage > pagination.endPage}">
+						<li><a  href="javascript:svr_refresh(${pagination.endPage+1})">&raquo;</a></li>
+					</c:if>
 				</ul>
 			</div>
 			<!-- //페이징 -->

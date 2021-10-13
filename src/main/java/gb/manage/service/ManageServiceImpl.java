@@ -29,6 +29,11 @@ public class ManageServiceImpl implements ManageService {
 	}
 	
 	@Override
+	public List<Map<String, Object>> findUsr2(Map<String, Object> map) throws Exception {
+		return manageDAO.findUsr2(map);
+	}
+	
+	@Override
 	public Map<String, Object> findUsrMap(Map<String, Object> map) throws Exception {
 		return manageDAO.findUsrMap(map);
 	}

@@ -302,13 +302,23 @@ function fn_popclose() {
 			</table>
 			
 			<!-- 페이징 -->
-			<div class="page2">
-				<ul>
-					<c:if test="${not empty paginationInfo}">
-				    	<ui:pagination paginationInfo = "${paginationInfo}" type="custom" jsFunction="usr_refresh"/>
+			<div class="paginationframe">
+				<div class="pagination">
+<!-- 			<div class="col-lg-12 col-xs-12 center"> -->
+<%-- 					<c:if test="${not empty paginationInfo}"> --%>
+<%-- 				    	<ui:pagination paginationInfo = "${paginationInfo}" type="custom" jsFunction="usr_refresh"/> --%>
+<%-- 					</c:if> --%>
+<!-- 					<input type="hidden" id="currentPageNo" name="currentPageNo" /> -->
+					<c:if test="${pagination.startPage-1 != 0 }">
+						<a href="javascript:usr_refresh(${pagination.startPage-1})">&laquo;</a>
 					</c:if>
-					<input type="hidden" id="currentPageNo" name="currentPageNo" />
-				</ul>
+					<c:forEach var="i" begin="${pagination.startPage }" end="${pagination.endPage }" varStatus="status">
+						<a <c:if test="${i eq pagination.currentPage }">class="active"</c:if> href="javascript:usr_refresh(${i})">${i}</a></li>
+					</c:forEach>
+					<c:if test="${pagination.endPage % pagination.pageCount == 0 && pagination.lastPage > pagination.endPage}">
+						<a href="javascript:usr_refresh(${pagination.endPage+1})">&raquo;</a>
+					</c:if>
+				</div>
 			</div>
 			<!-- //페이징 -->
 		</div> <!-- //하위:그리드 -->

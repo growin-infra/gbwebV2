@@ -16,6 +16,11 @@ public class ManageDAO extends AbstractDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public List<Map<String, Object>> findUsr2(Map<String, Object> map) throws Exception{
+		return (List<Map<String, Object>>)selectList("manage.findUsr");
+	}
+	
+	@SuppressWarnings("unchecked")
 	public Map<String, Object> findUsrMap(Map<String, Object> map) throws Exception{
 		return (Map<String, Object>)selectOne("manage.findUsrMap", map);
 	}

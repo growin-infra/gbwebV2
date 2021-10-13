@@ -95,14 +95,18 @@ function fn_exceldown() {
 	</table><!-- //표 -->
 	
 	<!-- 페이징 -->
-	<div class="page">
-		<ul>
-			<c:if test="${not empty paginationInfo}">
-		    	<ui:pagination paginationInfo = "${paginationInfo}" type="custom" jsFunction="rrs_refresh"/>
+	<div class="paginationframe">
+		<div class="pagination" style="margin:20px auto 0;">
+			<c:if test="${pagination.startPage-1 != 0 }">
+				<a href="javascript:rrs_refresh(${pagination.startPage-1})">&laquo;</a>
 			</c:if>
-			<input type="hidden" id="currentPageNo" name="currentPageNo" />
-			<!-- //페이징 -->
-		</ul>
+			<c:forEach var="i" begin="${pagination.startPage }" end="${pagination.endPage }" varStatus="status">
+				<a <c:if test="${i eq pagination.currentPage }">class="active"</c:if> href="javascript:rrs_refresh(${i})">${i}</a>
+			</c:forEach>
+			<c:if test="${pagination.endPage % pagination.pageCount == 0 && pagination.lastPage > pagination.endPage}">
+				<a  href="javascript:rrs_refresh(${pagination.endPage+1})">&raquo;</a>
+			</c:if>
+		</div>
 	</div>
 	
 </div><!-- //내용 -->

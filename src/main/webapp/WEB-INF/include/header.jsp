@@ -6,7 +6,7 @@
 <title>GINIAN</title>
 <%-- <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> --%>
 <%-- <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %> --%>
-<%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui" %>
+<%-- <%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui" %> --%>
 <%-- <%@ page import="java.util.*"%> --%>
 <%-- <c:set var="today" value="<%=new java.util.Date()%>" /> --%>
 

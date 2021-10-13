@@ -15,5 +15,21 @@ public class CommonDAO extends AbstractDAO{
 	public int btsSvrCnt() throws Exception {
 		return (int)selectOne("common.btsSvrCnt");
 	}
+	
+	public int tbSTTTBCnt() throws Exception {
+		return (int)selectOne("common.tbSTTTBCnt");
+	}
+	
+	public int tbUSRTBCnt() throws Exception {
+		return (int)selectOne("common.tbUSRTBCnt");
+	}
+	
+	public int tbBAKSCDTBCnt() throws Exception {
+		return (int)selectOne("common.tbBAKSCDTBCnt");
+	}
+	
+	public int tbMNGSVRTBCnt() throws Exception {
+		return (int)selectOne("common.tbMNGSVRTBCnt");
+	}
 
 }

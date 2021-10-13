@@ -22,13 +22,33 @@
 	<sql id="pagingPost">
 	    <![CDATA[
 	           ) AAA
-	     LIMIT #{START}, #{END}
+	     LIMIT #{displayRow} OFFSET #{offset}
 	    ]]>
 	</sql>
 	
 	<select id="btsSvrCnt" resultType="int">
 		SELECT COUNT(1) cnt
 		  FROM BAKTGTSVRTB
+	</select>
+	
+	<select id="tbSTTTBCnt" resultType="int">
+		SELECT COUNT(1) cnt
+		  FROM STTTB
+	</select>
+	
+	<select id="tbUSRTBCnt" resultType="int">
+		SELECT COUNT(1) cnt
+		  FROM USRTB
+	</select>
+	
+	<select id="tbBAKSCDTBCnt" resultType="int">
+		SELECT COUNT(1) cnt
+		  FROM BAKSCDTB
+	</select>
+	
+	<select id="tbMNGSVRTBCnt" resultType="int">
+		SELECT COUNT(1) cnt
+		  FROM MNGSVRTB
 	</select>
 	
 </mapper>

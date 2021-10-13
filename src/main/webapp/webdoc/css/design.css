@@ -150,6 +150,12 @@ table.top td {vertical-align:top;}
 .page2 ul li a {display:inline-block; text-align:center; color:#333; width:50px; padding:10px 0 9px;}
 .page2 ul li.on a {background:#f5f5f5; color:#00acf4;}
 
+.pagination {display: inline-block;}
+.pagination a {color: black; float: left; padding: 8px 16px; text-decoration: none;}
+.pagination a.active {background-color: #389aff; color: white;}
+.pagination a:hover:not(.active) {background-color: #ddd;}
+.paginationframe {width: 100%; text-align:center;}
+
 /* 서버카테고리 */
 .thpad {padding:0 20px;}
 .server a {color:#000 !important;}

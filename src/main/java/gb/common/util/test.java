@@ -17,7 +17,7 @@ public class test {
         DateFormat df = new SimpleDateFormat("yyyy.MM.dd");
         String today = df.format(cal.getTime());
         System.out.println("today["+today+"]");
-        cal.add(Calendar.DATE, 7);
+        cal.add(Calendar.DATE, 14);
         String sevend = df.format(cal.getTime());
         System.out.println("sevend["+sevend+"]");
 

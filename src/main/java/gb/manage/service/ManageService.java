@@ -9,6 +9,8 @@ public interface ManageService {
 	
 	Map<String, Object> findUsr(Map<String, Object> map) throws Exception;
 	
+	List<Map<String, Object>> findUsr2(Map<String, Object> map) throws Exception;
+	
 	Map<String, Object> findUsrMap(Map<String, Object> map) throws Exception;
 	
 	boolean insertUsr(Map<String, Object> map, HttpServletRequest request) throws Exception;

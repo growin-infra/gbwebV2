@@ -1,6 +1,5 @@
 package gb.summary.controller;
 
-import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import gb.common.common.CommandMap;
 import gb.common.service.Ssh2Service;
 import gb.common.util.ExcelManager;
@@ -100,10 +99,13 @@ public class SummaryController {
 			/* 한페이지에 보여줄 Row수 지정할때 아래와같이 파라메터 넣어줌
 			commandMap.put("PAGE_ROW", 15);
 			*/
-			commandMap.put("PAGE_ROW", 10);
+			commandMap.put("pageCount", 5);
+			commandMap.put("displayRow", 10);
+			commandMap.put("TABLE", "STTTB");
 			Map<String,Object> resultMap = new HashMap<String, Object>();
 			resultMap = summaryService.findStt(commandMap.getMap());
-		    mv.addObject("paginationInfo", (PaginationInfo)resultMap.get("paginationInfo"));
+//		    mv.addObject("paginationInfo", (PaginationInfo)resultMap.get("paginationInfo"));
+			mv.addObject("pagination", resultMap.get("pagination"));
 		    mv.addObject("list", resultMap.get("result"));
 		    mv.addObject("cpno", commandMap.get("currentPageNo")!=null?commandMap.get("currentPageNo"):"1");
 		    
@@ -121,14 +123,15 @@ public class SummaryController {
     	
 		try {
 			commandMap.put("knd", "G01");
+			commandMap.put("TABLE", "STTTB");
 			Map<String,Object> result = new HashMap<String, Object>();
 			result = summaryService.findStt(commandMap.getMap());
 			ArrayList<Map<String , Object>>  list = (ArrayList<Map<String, Object>>) result.get("result");
 			
-			PaginationInfo paginationInfo = new PaginationInfo();
-			paginationInfo = (PaginationInfo) result.get("paginationInfo");
+//			PaginationInfo paginationInfo = new PaginationInfo();
+//			paginationInfo = (PaginationInfo) result.get("paginationInfo");
 			
-			int total = paginationInfo.getTotalPageCount();
+//			int total = paginationInfo.getTotalPageCount();
 			String crr = commandMap.get("cpno").toString();
 			
 //			List<Map<String, Object>> list = summaryService.findSttAll();
@@ -142,7 +145,7 @@ public class SummaryController {
 			Map<String, Object> title = new HashMap<String , Object>(); //Excel Title
 //			title.put("title", commandMap.get("excel_title"));
 			String t = commandMap.get("excel_title").toString();
-			title.put("title", t+"   "+crr+" / "+total);
+//			title.put("title", t+"   "+crr+" / "+total);
 			Map<String , Object> beans = new HashMap<String , Object>();
 	    	beans.put("result", list);
 	    	beans.put("title", title);
@@ -203,10 +206,13 @@ public class SummaryController {
 		/* 한페이지에 보여줄 Row수 지정할때 아래와같이 파라메터 넣어줌
 		commandMap.put("PAGE_ROW", 15);
 		*/
-		commandMap.put("PAGE_ROW", 10);
+		commandMap.put("pageCount", 5);
+		commandMap.put("displayRow", 10);
+		commandMap.put("TABLE", "STTTB");
 		Map<String,Object> resultMap = new HashMap<String, Object>();
 		resultMap = summaryService.findStt(commandMap.getMap());
-	    mv.addObject("paginationInfo", (PaginationInfo)resultMap.get("paginationInfo"));
+//	    mv.addObject("paginationInfo", (PaginationInfo)resultMap.get("paginationInfo"));
+		mv.addObject("pagination", resultMap.get("pagination"));
 	    mv.addObject("list", resultMap.get("result"));
 	    mv.addObject("cpno", commandMap.get("currentPageNo")!=null?commandMap.get("currentPageNo"):"1");
 	    
@@ -217,14 +223,15 @@ public class SummaryController {
     	
 		try {
 			commandMap.put("knd", "G02");
+			commandMap.put("TABLE", "STTTB");
 			Map<String,Object> result = new HashMap<String, Object>();
 			result = summaryService.findStt(commandMap.getMap());
 			ArrayList<Map<String , Object>>  list = (ArrayList<Map<String, Object>>) result.get("result");
 			
-			PaginationInfo paginationInfo = new PaginationInfo();
-			paginationInfo = (PaginationInfo) result.get("paginationInfo");
+//			PaginationInfo paginationInfo = new PaginationInfo();
+//			paginationInfo = (PaginationInfo) result.get("paginationInfo");
 			
-			int total = paginationInfo.getTotalPageCount();
+//			int total = paginationInfo.getTotalPageCount();
 			String crr = commandMap.get("cpno").toString();
 			
 //			List<Map<String, Object>> list = summaryService.findSttAll();
@@ -238,7 +245,7 @@ public class SummaryController {
 			Map<String, Object> title = new HashMap<String , Object>(); //Excel Title
 //			title.put("title", commandMap.get("excel_title"));
 			String t = commandMap.get("excel_title").toString();
-			title.put("title", t+"   "+crr+" / "+total);
+//			title.put("title", t+"   "+crr+" / "+total);
 			Map<String , Object> beans = new HashMap<String , Object>();
 	    	beans.put("result", list);
 	    	beans.put("title", title);
@@ -277,10 +284,13 @@ public class SummaryController {
 		/* 한페이지에 보여줄 Row수 지정할때 아래와같이 파라메터 넣어줌
 		commandMap.put("PAGE_ROW", 15);
 		*/
-		commandMap.put("PAGE_ROW", 10);
+		commandMap.put("pageCount", 5);
+		commandMap.put("displayRow", 10);
+		commandMap.put("TABLE", "BAKSCDTB");
 		Map<String,Object> resultMap = new HashMap<String, Object>();
 		resultMap = summaryService.findScd(commandMap.getMap());
-	    mv.addObject("paginationInfo", (PaginationInfo)resultMap.get("paginationInfo"));
+//	    mv.addObject("paginationInfo", (PaginationInfo)resultMap.get("paginationInfo"));
+		mv.addObject("pagination", resultMap.get("pagination"));
 	    mv.addObject("list", resultMap.get("result"));
 	    mv.addObject("cpno", commandMap.get("currentPageNo")!=null?commandMap.get("currentPageNo"):"1");
 		
@@ -294,10 +304,10 @@ public class SummaryController {
 			result = summaryService.findScd(commandMap.getMap());
 			ArrayList<Map<String , Object>>  list = (ArrayList<Map<String, Object>>) result.get("result");
 			
-			PaginationInfo paginationInfo = new PaginationInfo();
-			paginationInfo = (PaginationInfo) result.get("paginationInfo");
+//			PaginationInfo paginationInfo = new PaginationInfo();
+//			paginationInfo = (PaginationInfo) result.get("paginationInfo");
 			
-			int total = paginationInfo.getTotalPageCount();
+//			int total = paginationInfo.getTotalPageCount();
 			String crr = commandMap.get("cpno").toString();
 			
 //			List<Map<String, Object>> list = summaryService.findScdAll();
@@ -310,7 +320,7 @@ public class SummaryController {
 			
 			String t = commandMap.get("excel_title").toString();
 			Map<String, Object> title = new HashMap<String , Object>(); //Excel Title
-			title.put("title", t+"   "+crr+" / "+total);
+//			title.put("title", t+"   "+crr+" / "+total);
 			Map<String , Object> beans = new HashMap<String , Object>();
 	    	beans.put("result", list);
 	    	beans.put("title", title);
