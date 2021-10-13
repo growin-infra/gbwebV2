@@ -69,6 +69,11 @@ th {
 body{
 	margin: 16px;
 }
+.mariadb_to_10_2_8{
+    background: #f8f8dd;
+    border: 1px solid #d3d854;
+    padding: 10px;
+}
 </style>
 </head>
 <body>

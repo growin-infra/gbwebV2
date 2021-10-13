@@ -11,7 +11,6 @@ import org.apache.commons.logging.LogFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 import gb.common.pagination.Pagination;
 
@@ -107,16 +106,12 @@ public class AbstractDAO {
 		printQueryId(queryId);
 		
 	    Map<String,Object> map = (Map<String,Object>)params;
-	    System.out.println("========= map ============");
-	    System.out.println(map);
-	    System.out.println("=========/map ============");
 	    int page = 0;
 	    if (map.containsKey("currentPageNo") == false || ObjectUtils.isEmpty(map.get("currentPageNo")) == true) {
 	    	page = 1;
 	    } else {
 	    	page = Integer.parseInt(map.get("currentPageNo").toString());
 	    }
-	    System.out.println("page["+page+"]");
 	    
 //	    int start = paginationInfo.getFirstRecordIndex();
 //	    /* MARIA */
@@ -126,7 +121,6 @@ public class AbstractDAO {
 	    
 //	    params = map;
 	    
-	    System.out.println("TABLE["+map.get("TABLE")+"]");
 	    int rowCount = 0;
 	    if ("STTTB".equals(map.get("TABLE"))) {
 	    	rowCount = commonDAO.tbSTTTBCnt();
@@ -137,7 +131,6 @@ public class AbstractDAO {
 		} else if ("MNGSVRTB".equals(map.get("TABLE"))) {
 			rowCount = commonDAO.tbMNGSVRTBCnt();
 		}
-		System.out.println("rowCount["+rowCount+"]");
 		
 		Map<String,Object> returnMap = new HashMap<String,Object>();
 //	    if(rowcnt == 0){
@@ -157,17 +150,6 @@ public class AbstractDAO {
 	    
 	    List<Map<String,Object>> list = sqlSession.selectList(queryId,map);
 	    returnMap.put("result", list);
-		
-	    System.out.println("========= param ==============================");
-	    System.out.println("getCurrentPage:"+pagination.getCurrentPage());
-	    System.out.println("getDisplayRow:"+pagination.getDisplayRow());
-	    System.out.println("getEndPage:"+pagination.getEndPage());
-	    System.out.println("getLastPage:"+pagination.getLastPage());
-	    System.out.println("getOffset:"+pagination.getOffset());
-	    System.out.println("getPageCount:"+pagination.getPageCount());
-	    System.out.println("getRowCount:"+pagination.getRowCount());
-	    System.out.println("getStartPage:"+pagination.getStartPage());
-	    System.out.println("========= /param =============================");
 	    
 		return returnMap;
 	}

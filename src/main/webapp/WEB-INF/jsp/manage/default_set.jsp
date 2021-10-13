@@ -457,7 +457,8 @@ function setChildValue(name , type){
 								</dd>
 								<dt>Options</dt>
 								<dd class="question2"><input class="input_w220" type="text" id="xtr_opt" name="xtr_opt">
-									<a href="#void" class="question2" onclick="newpopup('xtra')">검색</a>
+<!-- 									<a href="#void" class="question2" onclick="newpopup('xtra')">검색</a> -->
+									<a href="#void" class="question2" onclick="window.open('/help_xtra','new','scrollbars=yes,resizable=yes,width=500,height=500,top=100,left=100');return false;">검색</a>
 								</dd>
 								<dt class="tooltip" title="Source DB 'mysqlbinlog' and 'my_print_default' File Path">MySQL Binary Path</dt>
 								<dd><input type="text" id="xtra_rmt_msq_bny_pth" name="xtra_rmt_msq_bny_pth" style="ime-mode:disabled;" maxlength="100"></dd>

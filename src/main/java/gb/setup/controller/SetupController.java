@@ -246,9 +246,6 @@ public class SetupController {
 			
 			String tbscmd = ms_bny_pth+"/mysql -u"+bts_usr+" -p"+bts_pwd+" -h "+bts_ip+" -P "+bts_pot+" -BNse\"select 1\"";
 			Map<String,Object> tdbsMap = new HashMap<String,Object>();
-//			System.out.println("=========tdbsMap==========");
-//			System.out.println(tdbsMap);
-//			System.out.println("=========/tdbsMap=========");
 			tdbsMap = ssh2Service.getData(tbscmd, ms_usr, ms_pwd, ms_ip, ms_port, 5);
 			boolean result = false;
 			if (tdbsMap != null && tdbsMap.get("value") != null) {

@@ -99,17 +99,9 @@ public class ManageController {
 		commandMap.put("TABLE", "USRTB");
 		Map<String,Object> resultMap = new HashMap<String, Object>();
 		resultMap = manageService.findUsr(commandMap.getMap());
-		System.out.println("resultMap==========");
-		System.out.println(resultMap);
-		System.out.println("//resultMap========");
 //	    mv.addObject("paginationInfo", (PaginationInfo)resultMap.get("paginationInfo"));
 	    mv.addObject("pagination", resultMap.get("pagination"));
 	    mv.addObject("list", resultMap.get("result"));
-	    
-	    
-	    
-	    
-	    
 	    
 		return mv;
 	}
